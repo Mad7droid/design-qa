@@ -155,7 +155,7 @@ kbd+kbd{margin-left:3px}
 .shortcuts dd{margin:0;text-align:right;white-space:nowrap;color:var(--secondary);font-size:11px}
 dialog h3{font-size:12px;font-weight:500;margin:4px 0 10px}
 .links-block{margin-top:12px}
-.links-block textarea{margin-top:6px}
+.links-block input{margin-top:6px}
 .links-block .field-hint{margin:6px 0 0}
 #sessionLinksCount{color:var(--secondary)}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
