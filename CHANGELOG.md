@@ -21,7 +21,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 - **Focused editor:** while describing an issue, the session, list, and export controls step aside.
 - **Findings** are grouped by page, show a thumbnail, and show **Figma link** / **Design link** buttons when links are attached. Clicking the thumbnail reopens the page and re-highlights the element. Priority filter appears from 4 findings.
 - **Close-up screenshots** of the element are added to the export and report.
-- **Auto-named sessions** from the first page reviewed and the date.
+- **Auto-named sessions** with a short site name and date, e.g. "Gmail review · Nov 1". Long titles are clamped to two lines.
 - Removed the "On-device storage" header line (now in the Privacy link); export hint explains Copy vs Export; light-mode placeholder contrast raised to AA.
 
 ### Faster reviewing

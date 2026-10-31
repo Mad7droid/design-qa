@@ -39,6 +39,8 @@ const status=(text,error=false)=>{clearTimeout(toastTimer);$('status').textConte
 const UNTITLED='Untitled design review';
 const pageKey=url=>{try{const u=new URL(url);return u.host+u.pathname;}catch{return url;}};
 let filter='All';
+// Short site name for default titles: the last part of the page title (usually the site), else the host.
+const shortSite=f=>{let host='';try{host=new URL(f.url).hostname.replace(/^www\./,'');}catch{}const labels=host.split('.').filter(x=>x.length>=3&&!/^(com|org|net|app|www)$/.test(x));const parts=String(f.pageTitle||'').split(/\s+[-–—|·:]\s+/).map(x=>x.trim()).filter(Boolean);const last=parts.at(-1)||'';if(last.length<=24&&!/@/.test(last)&&(parts.length===1||labels.some(l=>last.toLowerCase().includes(l))))return last;return host&&host!=='localhost'?host:(last.slice(0,24)||'Site');};
 const thumbs=new Map();
 async function persist(){await chrome.storage.local.set({session});render();}
 function render(){
@@ -99,7 +101,7 @@ $('pick').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished 
 $('page').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;const tab=await activeTab();const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});if(floating){const current=await chrome.windows.getCurrent();await chrome.windows.update(current.id,{focused:true});}});
 $('save').onclick=()=>run(async()=>{if(!draft)return;if(!$('comment').value.trim()){$('comment').setAttribute('aria-invalid','true');$('commentError').hidden=false;$('comment').focus();return;}const f={...draft,component:$('component').value.trim()||draft.component,comment:$('comment').value.trim(),links:parseLinks($('links').value+' '+$('comment').value),tags:tagsFor($('comment').value),severity:$('severity').value};const index=session.findings.findIndex(x=>x.id===f.id);if(index<0)session.findings.push(f);else session.findings[index]=f;thumbs.delete(f.id);
   // Name an untitled session after the first page reviewed.
-  if(session.name===UNTITLED&&session.findings.length===1)session={...session,name:`${(f.pageTitle||pageKey(f.url)).slice(0,80)} · ${new Date().toLocaleDateString(undefined,{day:'numeric',month:'short'})}`};
+  if(session.name===UNTITLED&&session.findings.length===1)session={...session,name:`${shortSite(f)} review · ${new Date().toLocaleDateString(undefined,{day:'numeric',month:'short'})}`};
   await persist();await clearDraft();status('Finding saved. Keep browsing to add more.');});
 async function clearDraft(){await draftQueue;selectedTags=new Set();await chrome.storage.local.remove('draft');document.body.classList.remove('editing');$('comment').removeAttribute('aria-invalid');$('commentError').hidden=true;$('commentTip').hidden=true;draft=null;editing=false;$('editor').hidden=true;}
 // Discarding is instant and reversible, so no confirmation is needed.
