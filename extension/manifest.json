@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hyper-Design-QA",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Capture design issues across pages with marked screenshots, element specs, and notes. Export readable reports for humans and AI.",
   "minimum_chrome_version": "116",
   "permissions": [
@@ -31,6 +31,11 @@
     "32": "icons/icon-32.png",
     "48": "icons/icon-48.png",
     "128": "icons/icon-128.png"
+  },
+  "commands": {
+    "_execute_action": {"suggested_key": {"default": "Alt+Shift+Q"}, "description": "Open Hyper-Design-QA"},
+    "select-element": {"suggested_key": {"default": "Alt+Shift+S"}, "description": "Select an element on the page"},
+    "capture-page": {"suggested_key": {"default": "Alt+Shift+P"}, "description": "Capture the visible page"}
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'none'"

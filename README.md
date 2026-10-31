@@ -1,34 +1,80 @@
 # Hyper-Design-QA
 
-Source: https://github.com/Mad7droid/design-qa
+**Point at what's wrong, say why, export a report Claude can act on.**
 
-Privacy policy: https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/
+Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on a live site, type a note right next to it, and collect findings across pages in one session. Export clean Markdown + marked screenshots + JSON that people and AI can both read.
 
-A Chrome extension for reviewing a website without opening developer tools. Select an element, describe what needs fixing, and collect findings across pages in one saved session. Export a report for a person or Claude.
+[What's new](CHANGELOG.md) · [Privacy policy](https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/) · [Design notes](DESIGN.md)
+
+<p>
+  <img src="docs/screenshots/findings.png" alt="Side panel with a saved finding" width="300">
+  <img src="docs/screenshots/theme-light.png" alt="Light mode" width="300">
+</p>
+
+## Highlights
+
+- **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
+- **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.
+- **Links per finding and per session.** Attach Figma frames, tickets, or specs. They're included in the export.
+- **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts. Global shortcuts work from any page.
+- **Works across pages and tabs.** Findings and unfinished notes are saved on your device as you go.
+- **Side panel or floating window**, light and dark themes.
+- **AI-ready export:** `report.md`, `session.json`, and marked PNGs in one ZIP.
+
+<img src="docs/screenshots/inline-note.png" alt="Inline note box next to the selected element" width="620">
 
 ## Install locally
 
-1. Open `chrome://extensions` in Google Chrome (116 or later).
+Works in Google Chrome 116+ and Chromium browsers with side-panel support, such as Brave.
+
+1. Open `chrome://extensions` (or `brave://extensions`).
 2. Turn on **Developer mode**, then choose **Load unpacked**.
 3. Select this repository’s **extension** folder.
-4. Pin **Hyper-Design-QA** from Chrome’s extensions menu. Open a website and click the extension to open its side panel.
+4. Pin **Hyper-Design-QA** from the extensions menu. Open a website and click the extension (or press `⌥⇧Q` / `Alt+Shift+Q`) to open its side panel.
 
-No build, account, API key, or server is required. This is an unpacked development extension, not a Chrome Web Store release. It targets Chrome’s side panel API; Firefox and Safari are not supported.
+No build, account, API key, or server is required. After pulling updates, click the reload icon on the extension card. It targets Chrome’s side panel API; Firefox and Safari are not supported.
 
 ## Review a website
 
-1. Give your session a name.
-2. Click **Select an element**, then click the element on the website. Press **Esc** to stop selecting. **Capture visible page** records the current viewport instead.
-3. Describe the problem, optionally rename the element, choose a priority, and click **Save finding**.
-4. Use the **Pop out** icon beside the appearance switch for a separate draggable, resizable review window. It follows the last browser window you focused. Use **Return to side panel** to dock it again. This is a regular Chrome window, not an always-on-top overlay.
-5. Navigate to another page or tab and repeat. The current session and unfinished notes stay on this device, including after reopening Chrome.
-6. Click **Export report**. Unzip the download, then attach `report.md` and relevant screenshots to Claude. The Markdown links to the included images. **Download Markdown only** exports the text separately; it does not include image files.
+1. Name your session. Optionally add **Session links** (Figma file, spec, ticket).
+2. Press **S** or click **Select an element**, then click the element on the page. **Esc** cancels. **P** captures the visible page instead.
+3. Type your note in the box that appears beside the element. **↵** saves it, **⇧↵** adds a line, **Esc** discards it. Click away to keep the draft and finish it in the panel.
+4. In the panel you can add **Links**, rename the element, and set a priority. **⌘↵** / **Ctrl+↵** saves.
+5. Navigate to other pages or tabs and repeat. Use the pop-out icon for a floating window; **Return to side panel** docks it again.
+6. Press **E** or click **Export report**. Unzip it and attach `report.md` and the screenshots to Claude. **Download Markdown only** exports text without images.
 
-Findings can be edited or deleted. Delete has an Undo action. Use **Rename** to change a session name, then **Save name** or **Cancel**. Starting a new session offers export first and keeps one previous review, including its unfinished note. **Restore previous review** switches between the current and previous review. Starting another new session replaces the older saved review.
+Edit or delete findings from their cards. Delete, discard, and new session can all be undone with **⌘Z** / **Ctrl+Z** or the Undo button. **Restore previous review** switches between the current and previous session.
+
+<p>
+  <img src="docs/screenshots/editor.png" alt="Finding editor with links field" width="300">
+  <img src="docs/screenshots/shortcuts.png" alt="Keyboard shortcuts" width="300">
+</p>
+
+## Keyboard shortcuts
+
+| In the panel | |
+|---|---|
+| Select an element | `S` |
+| Capture visible page | `P` |
+| Save finding | `⌘↵` / `Ctrl+↵` |
+| Discard capture | `Esc` or `Delete` |
+| Jump to note | `C` |
+| Undo delete, discard, or new session | `⌘Z` / `Ctrl+Z` |
+| Edit / delete a focused finding | `↵` / `Delete` |
+| Export report | `E` |
+| Show all shortcuts | `?` |
+
+| From any web page | |
+|---|---|
+| Open Hyper-Design-QA | `⌥⇧Q` / `Alt+Shift+Q` |
+| Select an element | `⌥⇧S` / `Alt+Shift+S` |
+| Capture visible page | `⌥⇧P` / `Alt+Shift+P` |
+
+Single-key shortcuts don't fire while you're typing. Change the global ones at `chrome://extensions/shortcuts` or `brave://extensions/shortcuts`.
 
 ## Report contents
 
-- `report.md`: consistent headings, finding IDs, priority, comments, page URL and title, component label and its source, selector, marked screenshot link, and JSON specifications.
+- `report.md`: consistent headings, session reference links, finding IDs, priority, comments, per-finding links, page URL and title, component label and its source, selector, marked screenshot link, and JSON specifications.
 - `session.json`: schema version 1 with structured findings and relative screenshot paths.
 - `screenshots/<finding-id>.png`: visible-page evidence with the selected element outlined.
 
@@ -57,7 +103,7 @@ npm run check
 npm run test:browser
 ```
 
-The browser suite uses an installed Chrome executable on macOS. Set `CHROME_PATH` on other systems. It tests the rendered panel with mocked Chrome APIs and tests the real element picker against a fixture. It covers capture, required comments, saving, reload persistence, editing, delete/undo, ZIP downloads, narrow layouts, selection metadata, and Escape cancellation. The report tests cover Markdown formatting and ZIP structure. Browser permission prompts, side-panel integration, and real `captureVisibleTab` still require a manual loaded-extension smoke test.
+The browser suite uses an installed Chrome executable on macOS. Set `CHROME_PATH` on other systems. It tests the rendered panel with mocked Chrome APIs and tests the real element picker against a fixture. It covers capture, required comments, saving, links, reload persistence, editing, delete/undo, keyboard shortcuts, the inline note box, ZIP downloads, narrow layouts, selection metadata, and Escape cancellation. The report tests cover Markdown formatting and ZIP structure. Browser permission prompts, side-panel integration, and real `captureVisibleTab` still require a manual loaded-extension smoke test.
 
 ## UX references
 
@@ -67,4 +113,4 @@ The interface uses near-black surfaces, fine dividers, compact typography, and a
 
 Run `npm run package` to build the upload ZIP under `.context/release/`. Listing copy, privacy disclosures, and reviewer instructions live in `release/`. The package includes only runtime extension files. Store assets and release status are prepared separately. Public availability requires submission and approval through the Chrome Web Store developer dashboard.
 
-The public privacy-page source is in `privacy-site/`. The original `maddymanifest/design-qa` repository is not modified by this migration.
+The public privacy-page source is in `privacy-site/`. README screenshots in `docs/screenshots/` are generated by `npm run test:browser` (saved to `.context/`).

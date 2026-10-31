@@ -44,8 +44,22 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     if(stillActive?.id!==tab.id||currentTab.url!==message.data.url)throw new Error('The page changed during capture. Please select the element again.');
     const draft = {...message.data, ...(framework||{}), screenshot, id: crypto.randomUUID(), capturedAt: new Date().toISOString()};
     await chrome.storage.local.set({draft});
-    const {floatingWindowId}=await chrome.storage.session.get('floatingWindowId');if(floatingWindowId)try{await chrome.windows.update(floatingWindowId,{focused:true});}catch{}
-    respond({ok: true});
+    // The page keeps focus so the reviewer can type straight into the inline note box.
+    respond({ok: true, id: draft.id});
   }).catch(error => respond({error: error.message}));
   return true;
+});
+// Keyboard shortcuts work from the page itself, so reviewers never have to reach for the panel.
+chrome.commands.onCommand.addListener(async(command,tab)=>{
+  if(!tab?.id||!/^https?:|^file:/.test(tab.url||''))return;
+  // Open synchronously: the shortcut's user gesture expires after the first await.
+  chrome.sidePanel.open({windowId:tab.windowId}).catch(()=>{});
+  const {floatingWindowId}=await chrome.storage.session.get('floatingWindowId');
+  if(command==='select-element')await chrome.scripting.executeScript({target:{tabId:tab.id},files:['picker.js']});
+  if(command==='capture-page'){
+    const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});
+    const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});
+    await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});
+    if(floatingWindowId)try{await chrome.windows.update(floatingWindowId,{focused:true});}catch{}
+  }
 });
