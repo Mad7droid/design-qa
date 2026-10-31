@@ -1,6 +1,6 @@
 > Submitted on November 1, 2026. Google confirmed **Pending Review**. Automatic publication after approval is enabled. Item ID: `oolffllmbjflkicfkfiagiabmjbojilp`. See `release-status.json` for the saved status.
 
-# Publish Hyper-Design-QA 1.0.0
+# Publish Hyper Design QA 1.0.0
 
 Publisher: Madhav Nair
 Support email: mad7droid@gmail.com

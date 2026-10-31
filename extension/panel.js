@@ -125,11 +125,18 @@ $('cancelNew').onclick=()=>$('newSessionDialog').close();
 async function startNewSession(){await draftQueue;const previousSession={session,draft};const next=fresh();await chrome.storage.local.set({previousSession,session:next});session=next;hasPrevious=true;undoStack.length=0;undoStack.push(restorePreviousReview);$('undo').hidden=false;await clearDraft();$('newSessionDialog').close();$('renameForm').hidden=true;$('sessionDisplay').hidden=false;render();status('New session started. Restore the previous review with Undo.');$('rename').click();}
 $('startNew').onclick=()=>run(startNewSession);
 $('exportAndNew').onclick=()=>run(async()=>{await exportReport();await startNewSession();});
+// File name from the session (or site) plus local date and time, e.g. gmail-review-2026-11-01-0412-qa.zip.
+function exportName(ext){
+  const base=session.name===UNTITLED&&session.findings[0]?shortSite(session.findings[0]):session.name.replace(/\s*·\s*[A-Z][a-z]{2} \d{1,2}$|\s*·\s*\d{1,2} [A-Z][a-z]{2}$/,'');
+  const slug=base.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'design';
+  const d=new Date(),pad=n=>String(n).padStart(2,'0');
+  return `${slug}-${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}-qa.${ext}`;
+}
 async function exportReport(){
   status('Preparing your report…');
   const files=[{name:'report.md',data:markdown(session)},{name:'session.json',data:JSON.stringify({...session,schemaVersion:1,findings:session.findings.map(({screenshot,...f})=>({...f,screenshotPath:`screenshots/${f.id}.png`}))},null,2)}];
   for(const f of session.findings){const data=await annotate(f);files.push({name:`screenshots/${f.id}.png`,data:Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0))});if(f.rect){const close=await crop(f,32);files.push({name:`screenshots/${f.id}-closeup.png`,data:Uint8Array.from(atob(close.split(',')[1]),c=>c.charCodeAt(0))});}}
-  const url=URL.createObjectURL(zip(files)),a=document.createElement('a');a.href=url;a.download='hyper-design-qa-'+new Date().toISOString().slice(0,10)+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);status('Report downloaded. Unzip it, then attach report.md and the screenshots to Claude.');
+  const url=URL.createObjectURL(zip(files)),a=document.createElement('a');a.href=url;a.download=exportName('zip');a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);status('Report downloaded. Unzip it, then attach report.md and the screenshots to Claude.');
 }
 $('export').onclick=()=>run(exportReport);
 // Persist unfinished comments, including when the browser panel is closed.
@@ -146,7 +153,7 @@ chrome.storage.onChanged.addListener((changes,area)=>{
 });
 async function restorePreviousReview(){const {previousSession}=await chrome.storage.local.get('previousSession');if(!previousSession)return;await draftQueue;await chrome.storage.local.set({previousSession:{session,draft},session:previousSession.session});await clearDraft();session=previousSession.session;hasPrevious=true;$('renameForm').hidden=true;$('sessionDisplay').hidden=false;render();if(previousSession.draft)await chrome.storage.local.set({draft:previousSession.draft});undoStack.length=0;$('undo').hidden=true;status('Previous review restored.');}
 $('undo').onclick=()=>run(async()=>{const fn=undoStack.pop();$('undo').hidden=!undoStack.length;if(fn)await fn();});
-$('exportMd').onclick=()=>run(async()=>{const url=URL.createObjectURL(new Blob([markdown(session)],{type:'text/markdown'}));const a=document.createElement('a');a.href=url;a.download='hyper-design-qa-report.md';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);status('Markdown downloaded. Export the full report to include screenshots.');});
+$('exportMd').onclick=()=>run(async()=>{const url=URL.createObjectURL(new Blob([markdown(session)],{type:'text/markdown'}));const a=document.createElement('a');a.href=url;a.download=exportName('md');a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);status('Markdown downloaded. Export the full report to include screenshots.');});
 $('restorePrevious').onclick=()=>run(async()=>{if((session.findings.length||draft)&&!confirm('Switch to the previous review? Your current review will be kept so you can switch back.'))return;await restorePreviousReview();});
 // Linear-style shortcuts. Single keys only fire outside text fields.
 const typing=el=>!!el?.matches?.('input,textarea,select,[contenteditable="true"]');

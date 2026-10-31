@@ -1,8 +1,8 @@
-# Hyper-Design-QA
+# Hyper Design QA
 
 **Point at what's wrong, say why, export a report Claude can act on.**
 
-Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on a live site, type a note right next to it, and collect findings across pages in one session. Export clean Markdown + marked screenshots + JSON that people and AI can both read.
+Hyper Design QA is a Chrome/Brave extension for design QA. Select any element on a live site, type a note right next to it, and collect findings across pages in one session. Export clean Markdown + marked screenshots + JSON that people and AI can both read.
 
 [What's new](CHANGELOG.md) · [Privacy policy](https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/) · [Design notes](DESIGN.md)
 
@@ -36,7 +36,7 @@ Works in Google Chrome 116+ and Chromium browsers with side-panel support, such 
 1. Open `chrome://extensions` (or `brave://extensions`).
 2. Turn on **Developer mode**, then choose **Load unpacked**.
 3. Select this repository’s **extension** folder.
-4. Pin **Hyper-Design-QA** from the extensions menu. Open a website and click the extension (or press `⌥⇧Q` / `Alt+Shift+Q`) to open its side panel.
+4. Pin **Hyper Design QA** from the extensions menu. Open a website and click the extension (or press `⌥⇧Q` / `Alt+Shift+Q`) to open its side panel.
 
 No build, account, API key, or server is required. After pulling updates, click the reload icon on the extension card. It targets Chrome’s side panel API; Firefox and Safari are not supported.
 
@@ -81,7 +81,7 @@ Edit or delete findings from their cards. Delete, discard, and new session can a
 
 | From any web page | |
 |---|---|
-| Open Hyper-Design-QA | `⌥⇧Q` / `Alt+Shift+Q` |
+| Open Hyper Design QA | `⌥⇧Q` / `Alt+Shift+Q` |
 | Select an element | `⌥⇧S` / `Alt+Shift+S` |
 | Capture visible page | `⌥⇧P` / `Alt+Shift+P` |
 

@@ -1,12 +1,12 @@
-# Hyper-Design-QA privacy policy
+# Hyper Design QA privacy policy
 
 Effective date: October 31, 2026
 
-Hyper-Design-QA is published by Madhav Nair. Contact: mad7droid@gmail.com.
+Hyper Design QA is published by Madhav Nair. Contact: mad7droid@gmail.com.
 
 ## What the extension does
 
-Hyper-Design-QA lets you select elements on a website, capture visual evidence, add review notes, and export a design QA report. It does not automatically send information to Claude, another AI service, or the publisher.
+Hyper Design QA lets you select elements on a website, capture visual evidence, add review notes, and export a design QA report. It does not automatically send information to Claude, another AI service, or the publisher.
 
 ## Information handled on your device
 

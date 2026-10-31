@@ -1,10 +1,12 @@
 # What's new
 
-All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`.
+All notable changes to Hyper Design QA. Versions match `extension/manifest.json`.
 
 ## 1.1.0 — 1 Nov 2026
 
 ### Clearer names and controls
+- Product name is now **Hyper Design QA** (no hyphens).
+- **Export file names** include the session or site and local time, e.g. `gmail-review-2026-11-01-0412-qa.zip`, so exports on the same day no longer collide.
 - **Readable element names** when a site doesn't expose component names: `Button · “Reply”`, `Text · “Please confirm…”`, `Image · “Google logo”` instead of `div`. Generated names like `styled__C` are skipped.
 - **Close button (×)** on the on-page note box discards the capture, same as `Esc`.
 - Simpler note box: no title, plain priority chips, one "↵ Save" hint.

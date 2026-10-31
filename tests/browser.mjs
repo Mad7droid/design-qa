@@ -24,7 +24,7 @@ await page.waitForSelector('.finding');assert.match(await page.locator('.finding
 await page.reload();await expect(page.locator('.finding')).toHaveCount(1);
 await page.getByRole('button',{name:'Edit',exact:true}).click();await expect(page.locator('#comment')).toHaveValue('The header needs more space above it.');await page.fill('#comment','The header needs 24px of space above it.');await page.click('#save');await expect(page.locator('.finding')).toContainText('24px');
 await page.getByRole('button',{name:'Delete',exact:true}).click();await expect(page.locator('.finding')).toHaveCount(0);await page.click('#undo');await expect(page.locator('.finding')).toHaveCount(1);
-const downloadEvent=page.waitForEvent('download');await page.click('#export');const download=await downloadEvent;await download.saveAs('.context/browser-report.zip');
+const downloadEvent=page.waitForEvent('download');await page.click('#export');const download=await downloadEvent;assert.match(download.suggestedFilename(),/^example-page-review-\d{4}-\d{2}-\d{2}-\d{4}-qa\.zip$/);await download.saveAs('.context/browser-report.zip');
 await page.screenshot({path:'.context/findings.png',fullPage:true});
 await page.setViewportSize({width:280,height:850});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
 // Keyboard shortcuts: capture, discard, undo, save, and delete from a focused card.

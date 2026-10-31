@@ -2,7 +2,7 @@
 
 Publisher: Madhav Nair
 Support email: mad7droid@gmail.com
-Title: Hyper-Design-QA
+Title: Hyper Design QA
 Category: Developer Tools (choose the closest dashboard category if this label differs)
 Language: English
 Price: Free
@@ -17,7 +17,7 @@ Capture design issues across pages with marked screenshots, element specs, and n
 
 Turn what you see into a design QA report that a teammate or AI assistant can act on.
 
-Hyper-Design-QA lets you select an element on a website, describe what needs fixing, and collect findings across pages in one review. No developer tools, account, or AI API key is required to use the extension.
+Hyper Design QA lets you select an element on a website, describe what needs fixing, and collect findings across pages in one review. No developer tools, account, or AI API key is required to use the extension.
 
 CAPTURE THE CONTEXT
 • Select an element and capture a visible-page screenshot with the element outlined.
@@ -43,6 +43,6 @@ Review data stays in Chrome extension storage on your device. The extension has 
 WHAT TO EXPECT
 Screenshots capture the visible viewport, not a stitched full page. Component names are best-effort hints and may be missing or minified on production websites. Browser-protected pages, cross-origin iframe contents, closed shadow roots, and individual canvas-drawn elements cannot be inspected. The floating review window is a regular Chrome window, not an always-on-top overlay.
 
-Hyper-Design-QA is an independent tool and is not affiliated with Anthropic, Linear, or Google.
+Hyper Design QA is an independent tool and is not affiliated with Anthropic, Linear, or Google.
 
 Support: mad7droid@gmail.com
