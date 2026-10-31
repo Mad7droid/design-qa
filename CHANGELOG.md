@@ -25,6 +25,13 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 - Global: `⌥⇧Q` open, `⌥⇧S` select, `⌥⇧P` capture page, from any web page.
 - Buttons show their shortcut keys.
 
+### Cleaner reports
+- New **Summary** table at the top (ID, priority, element, page, issue) and priority counts.
+- Finding headings use the same `QA-01` IDs as the panel.
+- Readable timestamps, rounded bounds, and `css` / `json` code fences.
+- Captured styles drop default values (`normal`, `none`, `0px`, transparent), and long element text is trimmed to a short excerpt.
+- Copied Markdown says where to find screenshots instead of linking to images that aren't there.
+
 ### Improvements
 - Element name is auto-detected and now tucked under **Element details**; the editor shows only what you need to write.
 - The on-page note box keeps focus after capture, works on sites with strict security policies, and opens even if the background worker hasn't reloaded yet.
