@@ -25,6 +25,8 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 - Buttons show their shortcut keys.
 
 ### Improvements
+- Element name is auto-detected and now tucked under **Element details**; the editor shows only what you need to write.
+- The on-page note box keeps focus after capture, works on sites with strict security policies, and opens even if the background worker hasn't reloaded yet.
 - Discarding a capture no longer asks for confirmation. It can be undone instead.
 - Undo now covers deleted findings, discarded captures, and new sessions, in order.
 - Fixed Save and Undo being ignored while the screenshot preview was still loading.

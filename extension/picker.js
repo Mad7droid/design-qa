@@ -49,12 +49,15 @@
     else note(result?.id, data.rect);
   }
   // Inline note box next to the selection, so typing can start the moment the capture lands.
-  function note(id, rect) {
+  async function note(id, rect) {
+    // Fall back to the stored draft so an older background worker still opens the box.
+    if (!id) { try { id = (await chrome.storage.local.get('draft')).draft?.id; } catch {} }
     if (!id) return;
     const host = document.createElement('div');
     host.style.cssText = 'position:fixed;z-index:2147483647;inset:auto';
     const root = host.attachShadow({mode:'closed'});
-    root.innerHTML = '<style>:host{all:initial}.box{position:fixed;width:320px;background:#19191c;color:#ededf0;border:1px solid #36363e;border-radius:10px;box-shadow:0 16px 48px #0007;font:13px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px}textarea{box-sizing:border-box;width:100%;min-height:64px;resize:vertical;background:#101012;color:inherit;border:1px solid #36363e;border-radius:6px;padding:8px 9px;font:inherit;outline:none}textarea:focus{border-color:#d8d4c9}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#a0a0ab;font-size:11px}kbd{font:inherit;border:1px solid #36363e;border-radius:4px;padding:0 4px;margin-right:3px}.title{font-size:11px;color:#a0a0ab;margin:0 0 6px}</style><div class="box" role="dialog" aria-label="Hyper-Design-QA note"><p class="title">Captured · What needs fixing? <span style="opacity:.7">#tags work · ⇧↵ new line</span></p><textarea placeholder="Start typing your note…"></textarea><div class="foot"><span><kbd>↵</kbd>Save <kbd>'+(/Mac/.test(navigator.platform)?'⌘':'Ctrl')+'↵</kbd>Save &amp; next</span><span><kbd>Esc</kbd>Discard</span></div></div>';
+    root.innerHTML = '<div class="box" role="dialog" aria-label="Hyper-Design-QA note"><p class="title">Captured · What needs fixing? <span style="opacity:.7">#tags work · ⇧↵ new line</span></p><textarea placeholder="Start typing your note…"></textarea><div class="foot"><span><kbd>↵</kbd>Save <kbd>'+(/Mac/.test(navigator.platform)?'⌘':'Ctrl')+'↵</kbd>Save &amp; next</span><span><kbd>Esc</kbd>Discard</span></div></div>';
+    const sheet = new CSSStyleSheet(); sheet.replaceSync(':host{all:initial}.box{position:fixed;width:320px;background:#19191c;color:#ededf0;border:1px solid #36363e;border-radius:10px;box-shadow:0 16px 48px #0007;font:13px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px}textarea{box-sizing:border-box;width:100%;min-height:64px;resize:vertical;background:#101012;color:inherit;border:1px solid #36363e;border-radius:6px;padding:8px 9px;font:inherit;outline:none}textarea:focus{border-color:#d8d4c9}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#a0a0ab;font-size:11px}kbd{font:inherit;border:1px solid #36363e;border-radius:4px;padding:0 4px;margin-right:3px}.title{font-size:11px;color:#a0a0ab;margin:0 0 6px}'); root.adoptedStyleSheets = [sheet];
     const box = root.querySelector('.box'), field = root.querySelector('textarea');
     const r = rect || {x: innerWidth/2 - 160, y: 60, width: 320, height: 0};
     const below = r.y + r.height + 10, top = below + 150 < innerHeight ? below : Math.max(10, r.y - 150);
@@ -75,7 +78,13 @@
     for (const type of ['keyup','keypress']) field.addEventListener(type, e => e.stopPropagation());
     window.addEventListener('pointerdown', outside, true);
     window.__hyperQAToast = close;
-    field.focus();
+    // Pull focus back if the panel grabs it in the first moments after capture.
+    let touched = false;
+    host.addEventListener('pointerdown', () => { touched = true; });
+    const keep = () => { if (!touched && host.isConnected) setTimeout(() => { if (!touched && host.isConnected && !field.value) field.focus(); }, 0); };
+    field.addEventListener('blur', keep);
+    setTimeout(() => field.removeEventListener('blur', keep), 1500);
+    window.focus(); field.focus();
   }
   window.__hyperQA={cancel};
   window.addEventListener('pointermove',move,true);
