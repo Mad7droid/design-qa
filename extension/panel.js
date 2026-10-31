@@ -33,27 +33,44 @@ const hashTags=text=>[...String(text||'').matchAll(/#([a-z][\w-]*)/gi)].map(m=>T
 const tagsFor=comment=>[...new Set([...selectedTags,...hashTags(comment)])];
 function renderTags(){$('tags').replaceChildren(...TAGS.map((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.title=`${mac?'⌥':'Alt+'}${i+1}`;b.setAttribute('aria-pressed',String(selectedTags.has(t)));b.onclick=()=>toggleTag(t);return b;}));}
 function toggleTag(t){selectedTags.has(t)?selectedTags.delete(t):selectedTags.add(t);renderTags();$('comment').dispatchEvent(new Event('input'));}
-const status=(text,error=false)=>{$('status').textContent=text;$('statusWrap').hidden=!text;$('statusWrap').classList.toggle('error',error);};
+let toastTimer;
+// Bottom toast so feedback is visible wherever the panel is scrolled. Undo keeps it up longer.
+const status=(text,error=false)=>{clearTimeout(toastTimer);$('status').textContent=text;$('statusWrap').hidden=!text;$('statusWrap').classList.toggle('error',error);if(text&&!text.endsWith('…'))toastTimer=setTimeout(()=>{$('statusWrap').hidden=true;},error||!$('undo').hidden?8000:4000);};
+const UNTITLED='Untitled design review';
+const pageKey=url=>{try{const u=new URL(url);return u.host+u.pathname;}catch{return url;}};
+let filter='All';
+const thumbs=new Map();
 async function persist(){await chrome.storage.local.set({session});render();}
 function render(){
   $('restorePrevious').hidden=!hasPrevious;$('sessionTitle').textContent=session.name;if($('renameForm').hidden)$('sessionName').value=session.name;if(document.activeElement!==$('sessionLinks'))$('sessionLinks').value=(session.links||[]).join(' ');$('sessionLinksCount').textContent=session.links?.length?`· ${session.links.length}`:'';
   $('count').textContent=`${session.findings.length} ${session.findings.length===1?'finding':'findings'}`;$('badge').textContent=String(session.findings.length).padStart(2,'0');
-  $('empty').hidden=!!session.findings.length;$('export').disabled=!session.findings.length;$('copyMd').disabled=!session.findings.length;$('exportMd').disabled=!session.findings.length;$('exportHint').textContent=session.findings.length?'Includes Markdown, screenshots, and captured details.':'Add a finding to create your report.';
+  $('empty').hidden=!!session.findings.length;$('export').disabled=!session.findings.length;$('copyMd').disabled=!session.findings.length;$('exportMd').disabled=!session.findings.length;$('exportHint').textContent=session.findings.length?'Export includes screenshots. Copy is best for pasting into Claude.':'Add a finding to create your report.';
+  // Group by page in first-seen order; QA numbers keep capture order so they match the report.
+  const counts={All:session.findings.length};for(const f of session.findings)counts[f.severity]=(counts[f.severity]||0)+1;
+  if(filter!=='All'&&!counts[filter])filter='All';
+  $('filters').hidden=session.findings.length<4;
+  $('filters').replaceChildren(...['All','High','Medium','Low'].filter(p=>p==='All'||counts[p]).map(p=>{const b=document.createElement('button');b.type='button';b.textContent=p==='All'?'All':`${p} ${counts[p]}`;b.setAttribute('aria-pressed',String(filter===p));b.onclick=()=>{filter=p;render();};return b;}));
+  const groups=new Map();
+  for(const [i,f] of session.findings.entries()){if(filter!=='All'&&f.severity!==filter)continue;const k=pageKey(f.url);if(!groups.has(k))groups.set(k,[]);groups.get(k).push([i,f]);}
   $('findings').replaceChildren();
-  for(const [i,f] of session.findings.entries()){
+  for(const [k,items] of groups){
+    const head=document.createElement('h3');head.className='page-group';const t=document.createElement('span');t.textContent=items[0][1].pageTitle||k;t.title=k;const n=document.createElement('span');n.textContent=String(items.length);head.append(t,n);$('findings').append(head);
+    for(const [i,f] of items)$('findings').append(findingCard(f,i));
+  }
+}
+function findingCard(f,i){
     const card=document.createElement('article');card.className='finding';
     const title=document.createElement('h3');const number=document.createElement('span');number.className='finding-number';number.textContent=`QA-${String(i+1).padStart(2,'0')}`;const name=document.createElement('span');name.className='finding-title';name.textContent=f.component;title.append(number,name);
-    const meta=document.createElement('small');meta.textContent=`${f.severity} · ${new URL(f.url).hostname}${f.tags?.length?' · '+f.tags.map(t=>'#'+t.toLowerCase()).join(' '):''}`;
+    const meta=document.createElement('small');meta.textContent=`${f.severity}${f.tags?.length?' · '+f.tags.map(t=>'#'+t.toLowerCase()).join(' '):''}`;
     const comment=document.createElement('p');comment.textContent=f.comment;
     const linkList=document.createElement('div');linkList.className='finding-links';for(const url of f.links||[]){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=/figma\.com/i.test(url)?'Figma ↗':new URL(url).hostname+' ↗';linkList.append(a);}
     const actions=document.createElement('div');actions.className='actions';
     card.tabIndex=0;card.setAttribute('aria-label',`QA-${String(i+1).padStart(2,'0')} ${f.component}. Enter to edit, Delete to remove.`);card.onkeydown=e=>{if(e.target!==card)return;if(e.key==='Enter'){e.preventDefault();run(()=>editFinding(f));}else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();run(()=>deleteFinding(f,i));}};
-    for(const [label,action] of [['Edit',()=>editFinding(f)],['Delete',()=>deleteFinding(f,i)]]){const b=document.createElement('button');b.append(icon(label==='Edit'?'edit':'trash'),document.createTextNode(label));b.onclick=()=>run(action);actions.append(b);}
-    card.append(title,meta,comment,...(f.links?.length?[linkList]:[]),actions);$('findings').append(card);
-  }
+    for(const [label,action] of [['Open',()=>reveal(f)],['Edit',()=>editFinding(f)],['Delete',()=>deleteFinding(f,i)]]){const b=document.createElement('button');b.append(icon({Open:'popout',Edit:'edit',Delete:'trash'}[label]),document.createTextNode(label));b.onclick=()=>run(action);actions.append(b);}
+    const text=document.createElement('div');text.append(title,meta,comment,...(f.links?.length?[linkList]:[]));const thumb=document.createElement('button');thumb.className='thumb';thumb.title='Open the page and highlight this element';thumb.setAttribute('aria-label',`Open page for QA-${String(i+1).padStart(2,'0')}`);const img=document.createElement('img');img.alt='';thumb.append(img);thumbFor(f).then(src=>{img.src=src;}).catch(()=>{});thumb.onclick=()=>run(()=>reveal(f));const bodyRow=document.createElement('div');bodyRow.className='finding-body';bodyRow.append(text,thumb);card.append(bodyRow,actions);return card;
 }
 async function editFinding(f){if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;editing=true;await showDraft(f);}
-async function deleteFinding(f,i){session.findings=session.findings.filter(x=>x.id!==f.id);await persist();pushUndo('Finding deleted.',async()=>{session.findings.splice(i,0,f);await persist();status('Finding restored.');});const cards=$('findings').children;(cards[Math.min(i,cards.length-1)]||$('pick')).focus();}
+async function deleteFinding(f,i){session.findings=session.findings.filter(x=>x.id!==f.id);await persist();pushUndo('Finding deleted.',async()=>{session.findings.splice(i,0,f);await persist();status('Finding restored.');});const cards=$('findings').querySelectorAll('.finding');(cards[Math.min(i,cards.length-1)]||$('pick')).focus();}
 async function run(fn){if(busy)return;busy=true;try{await fn();}catch(e){status(e.message,true);}finally{busy=false;}}
 async function activeTab(){let query={active:true,currentWindow:true};if(floating){const normal=await chrome.windows.getLastFocused({windowTypes:['normal']});reviewWindowId=normal.id;query={active:true,windowId:normal.id};await chrome.windows.update(normal.id,{focused:true});}const [tab]=await chrome.tabs.query(query);if(!tab||!/^https?:|^file:/.test(tab.url||''))throw new Error('Open a regular website to capture a finding. Browser settings and extension pages cannot be inspected.');return tab;}
 async function annotate(f){
@@ -62,17 +79,33 @@ async function annotate(f){
   if(f.rect){const sx=canvas.width/f.viewport.width,sy=canvas.height/f.viewport.height;ctx.strokeStyle='#f04d2e';ctx.lineWidth=3*Math.max(sx,sy);ctx.strokeRect(f.rect.x*sx,f.rect.y*sy,f.rect.width*sx,f.rect.height*sy);}
   return canvas.toDataURL('image/png');
 }
-async function showDraft(f){draft=f;document.body.classList.add('editing');$('editor').hidden=false;$('editorTitle').textContent=editing?'Edit finding':'Describe the issue';const preview=annotate(f);$('component').value=f.component;$('location').textContent=f.selector+' · '+f.url;$('comment').value=f.comment||'';$('links').value=(f.links||[]).join(' ');selectedTags=new Set((f.tags||[]).filter(t=>TAGS.includes(t)));renderTags();$('severity').value=f.severity||'Medium';if(document.hasFocus())$('comment').focus();status('');preview.then(src=>{if(draft?.id===f.id)$('preview').src=src;},e=>status(e.message,true));}
+// Crop around the element (with padding) for close-ups and card thumbnails.
+async function crop(f,pad,maxWidth){
+  const src=await annotate(f);if(!f.rect)return src;
+  const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=src;});
+  const sx=img.naturalWidth/f.viewport.width,sy=img.naturalHeight/f.viewport.height;
+  const x=Math.max(0,(f.rect.x-pad)*sx),y=Math.max(0,(f.rect.y-pad)*sy),w=Math.min(img.naturalWidth-x,(f.rect.width+pad*2)*sx),h=Math.min(img.naturalHeight-y,(f.rect.height+pad*2)*sy);
+  if(w<4||h<4)return src;
+  const scale=maxWidth?Math.min(1,maxWidth/w):1,canvas=document.createElement('canvas');canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);
+  canvas.getContext('2d').drawImage(img,x,y,w,h,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/png');
+}
+function thumbFor(f){if(!thumbs.has(f.id))thumbs.set(f.id,crop(f,24,160));return thumbs.get(f.id);}
+// Open the finding's page (reusing a tab if one is already there) and re-highlight the element.
+async function reveal(f){const result=await chrome.runtime.sendMessage({type:'reveal',url:f.url,selector:f.selector,rect:f.rect,scrollY:f.viewport?.scrollY});if(result?.error)throw new Error(result.error);if(result?.missing)status('Opened the page, but this element has changed or moved.');}
+async function showDraft(f){draft=f;$('previewCaption').textContent=f.rect?'Screenshot included · close-up added to the export':'Screenshot included';document.body.classList.add('editing');$('editor').hidden=false;$('editorTitle').textContent=editing?'Edit finding':'Describe the issue';const preview=annotate(f);$('component').value=f.component;$('location').textContent=f.selector+' · '+f.url;$('comment').value=f.comment||'';$('links').value=(f.links||[]).join(' ');selectedTags=new Set((f.tags||[]).filter(t=>TAGS.includes(t)));renderTags();$('severity').value=f.severity||'Medium';if(document.hasFocus())$('comment').focus();status('');preview.then(src=>{if(draft?.id===f.id)$('preview').src=src;},e=>status(e.message,true));}
 $('pick').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;const tab=await activeTab();await chrome.scripting.executeScript({target:{tabId:tab.id},files:['picker.js']});status('Click an element on the page. Press Esc to cancel.');});
 $('page').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;const tab=await activeTab();const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});if(floating){const current=await chrome.windows.getCurrent();await chrome.windows.update(current.id,{focused:true});}});
-$('save').onclick=()=>run(async()=>{if(!draft)return;if(!$('comment').value.trim()){$('comment').setAttribute('aria-invalid','true');status('Describe what needs fixing before saving.',true);$('comment').focus();return;}const f={...draft,component:$('component').value.trim()||draft.component,comment:$('comment').value.trim(),links:parseLinks($('links').value),tags:tagsFor($('comment').value),severity:$('severity').value};const index=session.findings.findIndex(x=>x.id===f.id);if(index<0)session.findings.push(f);else session.findings[index]=f;await persist();await clearDraft();status('Finding saved. Keep browsing to add more.');});
-async function clearDraft(){await draftQueue;selectedTags=new Set();await chrome.storage.local.remove('draft');document.body.classList.remove('editing');$('comment').removeAttribute('aria-invalid');draft=null;editing=false;$('editor').hidden=true;}
+$('save').onclick=()=>run(async()=>{if(!draft)return;if(!$('comment').value.trim()){$('comment').setAttribute('aria-invalid','true');$('commentError').hidden=false;$('comment').focus();return;}const f={...draft,component:$('component').value.trim()||draft.component,comment:$('comment').value.trim(),links:parseLinks($('links').value+' '+$('comment').value),tags:tagsFor($('comment').value),severity:$('severity').value};const index=session.findings.findIndex(x=>x.id===f.id);if(index<0)session.findings.push(f);else session.findings[index]=f;thumbs.delete(f.id);
+  // Name an untitled session after the first page reviewed.
+  if(session.name===UNTITLED&&session.findings.length===1)session={...session,name:`${(f.pageTitle||pageKey(f.url)).slice(0,80)} · ${new Date().toLocaleDateString(undefined,{day:'numeric',month:'short'})}`};
+  await persist();await clearDraft();status('Finding saved. Keep browsing to add more.');});
+async function clearDraft(){await draftQueue;selectedTags=new Set();await chrome.storage.local.remove('draft');document.body.classList.remove('editing');$('comment').removeAttribute('aria-invalid');$('commentError').hidden=true;$('commentTip').hidden=true;draft=null;editing=false;$('editor').hidden=true;}
 // Discarding is instant and reversible, so no confirmation is needed.
 async function discardDraft(){if(!draft)return;const saved=draft,wasEditing=editing;await clearDraft();pushUndo(wasEditing?'Changes discarded.':'Capture discarded.',async()=>{draft=saved;await chrome.storage.local.set({draft:saved});editing=wasEditing;await showDraft(saved);});$('pick').focus();}
 $('discard').onclick=()=>run(discardDraft);
 $('sessionLinks').addEventListener('change',()=>run(async()=>{session={...session,links:parseLinks($('sessionLinks').value)};await persist();}));
 // The on-page note box saves through the panel so validation and undo stay in one place.
-chrome.runtime.onMessage?.addListener(message=>{if(message.type!=='save-draft'||!draft||message.id!==draft.id)return;$('comment').value=message.comment;draft={...draft,comment:message.comment};$('save').click();if(message.next){const again=()=>busy?setTimeout(again,30):draft||$('pick').click();setTimeout(again,30);}});
+chrome.runtime.onMessage?.addListener(message=>{if(message.type!=='save-draft'||!draft||message.id!==draft.id)return;$('comment').value=message.comment;if(message.severity)$('severity').value=message.severity;draft={...draft,comment:message.comment,severity:$('severity').value};$('save').click();if(message.next){const again=()=>busy?setTimeout(again,30):draft||$('pick').click();setTimeout(again,30);}});
 // Feedback sits on the button itself because the status bar is often scrolled out of view.
 let copyTimer;
 async function copyReport(){const b=$('copyMd');clearTimeout(copyTimer);try{await navigator.clipboard.writeText(markdown(session,{screenshots:false}));}catch{b.classList.add('copy-failed');b.firstChild.textContent='Couldn’t copy ';copyTimer=setTimeout(()=>{b.classList.remove('copy-failed');b.firstChild.textContent='Copy Markdown ';},2500);throw new Error('Could not copy. Click the panel first, then try again.');}b.classList.add('copied');b.firstChild.textContent='✓ Copied ';$('copyLive').textContent=`Report copied: ${session.findings.length} ${session.findings.length===1?'finding':'findings'}, without screenshots.`;copyTimer=setTimeout(()=>{b.classList.remove('copied');b.firstChild.textContent='Copy Markdown ';$('copyLive').textContent='';},2000);}
@@ -91,13 +124,13 @@ $('exportAndNew').onclick=()=>run(async()=>{await exportReport();await startNewS
 async function exportReport(){
   status('Preparing your report…');
   const files=[{name:'report.md',data:markdown(session)},{name:'session.json',data:JSON.stringify({...session,schemaVersion:1,findings:session.findings.map(({screenshot,...f})=>({...f,screenshotPath:`screenshots/${f.id}.png`}))},null,2)}];
-  for(const f of session.findings){const data=await annotate(f);files.push({name:`screenshots/${f.id}.png`,data:Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0))});}
+  for(const f of session.findings){const data=await annotate(f);files.push({name:`screenshots/${f.id}.png`,data:Uint8Array.from(atob(data.split(',')[1]),c=>c.charCodeAt(0))});if(f.rect){const close=await crop(f,32);files.push({name:`screenshots/${f.id}-closeup.png`,data:Uint8Array.from(atob(close.split(',')[1]),c=>c.charCodeAt(0))});}}
   const url=URL.createObjectURL(zip(files)),a=document.createElement('a');a.href=url;a.download='hyper-design-qa-'+new Date().toISOString().slice(0,10)+'.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);status('Report downloaded. Unzip it, then attach report.md and the screenshots to Claude.');
 }
 $('export').onclick=()=>run(exportReport);
 // Persist unfinished comments, including when the browser panel is closed.
 let draftQueue=Promise.resolve();
-for(const id of ['comment','component','severity','links']) $(id).addEventListener('input',()=>{if(!draft)return;draft={...draft,comment:$('comment').value,component:$('component').value,severity:$('severity').value,links:parseLinks($('links').value),tags:tagsFor($('comment').value)};$('comment').removeAttribute('aria-invalid');const snapshot=draft;draftQueue=draftQueue.then(()=>chrome.storage.local.set({draft:snapshot})).catch(e=>status(e.message));});
+for(const id of ['comment','component','severity','links']) $(id).addEventListener('input',()=>{if(!draft)return;draft={...draft,comment:$('comment').value,component:$('component').value,severity:$('severity').value,links:parseLinks($('links').value),tags:tagsFor($('comment').value)};$('comment').removeAttribute('aria-invalid');$('commentError').hidden=true;const words=$('comment').value.replace(/#\w+|https?:\/\/\S+/g,'').trim().split(/\s+/).filter(Boolean).length;$('commentTip').hidden=!(words>0&&words<3);const snapshot=draft;draftQueue=draftQueue.then(()=>chrome.storage.local.set({draft:snapshot})).catch(e=>status(e.message));});
 chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes.draft?.newValue&&changes.draft.newValue.id!==draft?.id){editing=false;showDraft(changes.draft.newValue).catch(e=>status(e.message));}});
 // Keep the two surfaces current if Chrome leaves the side panel open.
 chrome.storage.onChanged.addListener((changes,area)=>{

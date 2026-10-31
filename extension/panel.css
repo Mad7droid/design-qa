@@ -172,3 +172,20 @@ dialog h3{font-size:12px;font-weight:500;margin:4px 0 10px}
 #copyMd.copied{color:var(--success,#7fd49b);background:var(--hover)}
 #copyMd.copy-failed{color:var(--error)}
 .copy-live{font-size:11px;color:var(--secondary);min-height:16px;margin:4px 0 0}
+#statusWrap.toast{position:fixed;left:12px;right:12px;bottom:12px;z-index:50;margin:0;box-shadow:0 10px 30px #0006;animation:toast-in 160ms ease-out}
+#statusWrap.toast #status{flex:1;margin:0}
+@keyframes toast-in{from{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){#statusWrap.toast{animation:none}}
+.field-error{font-size:11px;color:var(--error);margin:-8px 0 8px}
+.field-tip{font-size:11px;color:var(--secondary);margin:-12px 0 18px}
+body.editing .session,body.editing #findingsSection,body.editing footer{display:none}
+.filters{display:flex;gap:4px}
+.filters button{min-height:24px;padding:2px 8px;font-size:11px;font-weight:500;border-radius:12px;color:var(--secondary);background:none;border:1px solid transparent}
+.filters button[aria-pressed="true"]{border-color:var(--control-border);color:var(--text);background:var(--surface)}
+.page-group{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:500;color:var(--secondary);margin:18px 0 4px;overflow-wrap:anywhere}
+.page-group span:last-child{font-weight:400;flex-shrink:0}
+.finding-body{display:grid;grid-template-columns:1fr 72px;gap:12px}
+.thumb{width:72px;height:54px;padding:0;min-height:0;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--surface);cursor:pointer}
+.thumb img{display:block;width:100%;height:100%;object-fit:cover}
+:root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:#66665e}
+.filters[hidden]{display:none}

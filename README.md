@@ -8,11 +8,12 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 
 <p>
   <img src="docs/screenshots/findings.png" alt="Side panel with a saved finding" width="300">
-  <img src="docs/screenshots/theme-light.png" alt="Light mode" width="300">
+  <img src="docs/screenshots/light-grouped.png" alt="Findings grouped by page, light mode" width="300">
 </p>
 
 ## Highlights
 
+- **Precise selection.** A label shows the element name and size; `↑`/`↓` walks to the parent or child.
 - **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
 - **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.
 - **Save & next** (`⌘↵` in the note box) for marking many issues in a row.
@@ -20,11 +21,12 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 - **Copy Markdown** (`⌘⇧C`) to paste a report anywhere.
 - **Links per finding and per session.** Attach Figma frames, tickets, or specs. They're included in the export.
 - **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts. Global shortcuts work from any page.
+- **Findings grouped by page** with thumbnails, a priority filter, and **Open** to jump back and re-highlight the element.
 - **Works across pages and tabs.** Findings and unfinished notes are saved on your device as you go.
 - **Side panel or floating window**, light and dark themes.
 - **AI-ready export:** `report.md`, `session.json`, and marked PNGs in one ZIP.
 
-<img src="docs/screenshots/inline-note.png" alt="Inline note box next to the selected element" width="620">
+<img src="docs/screenshots/picker-label.png" alt="Picker with element label" width="420"> <img src="docs/screenshots/note-tip.png" alt="Note box beside the element with priority" width="420">
 
 ## Install locally
 
@@ -69,6 +71,12 @@ Edit or delete findings from their cards. Delete, discard, and new session can a
 | Toggle tag 1–8 | `⌥1`–`⌥8` / `Alt+1`–`Alt+8` |
 | Save & select next (on-page box) | `⌘↵` / `Ctrl+↵` |
 | Show all shortcuts | `?` |
+
+| While selecting / in the note box | |
+|---|---|
+| Parent / child element | `↑` / `↓` |
+| Select highlighted element | `↵` |
+| Priority High / Medium / Low | `⌥1`–`⌥3` / `Alt+1`–`Alt+3` |
 
 | From any web page | |
 |---|---|

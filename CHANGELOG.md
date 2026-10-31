@@ -4,6 +4,16 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 
 ## 1.1.0 — 1 Nov 2026
 
+### UX review fixes
+- **Picker:** live label with element name and size; `↑`/`↓` moves to parent/child; `↵` selects.
+- **Note box:** opens beside the element so the outline stays visible; set priority with `⌥1`–`⌥3`; links typed in the note are added to Links; one-word notes get a gentle nudge (press `↵` again to save anyway).
+- **Feedback** now appears as a toast at the bottom of the panel, with Undo; the required-note error shows under the field.
+- **Focused editor:** while describing an issue, the session, list, and export controls step aside.
+- **Findings** are grouped by page, show a thumbnail, and have **Open** to reopen the page and re-highlight the element. Priority filter appears from 4 findings.
+- **Close-up screenshots** of the element are added to the export and report.
+- **Auto-named sessions** from the first page reviewed and the date.
+- Removed the "On-device storage" header line (now in the Privacy link); export hint explains Copy vs Export; light-mode placeholder contrast raised to AA.
+
 ### Faster reviewing
 - **Save & next:** `⌘↵` / `Ctrl+↵` in the on-page note box saves and starts selecting the next element right away.
 - **Quick tags:** Spacing, Alignment, Typography, Colour, Copy, Accessibility, Responsive, Interaction. Click a chip, press `⌥1`–`⌥8`, or type `#spacing` in your note. Tags appear on cards and in the export.

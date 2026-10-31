@@ -69,3 +69,26 @@ async function runCommand(command,tab,openPanel){
     if(floatingWindowId)try{await chrome.windows.update(floatingWindowId,{focused:true});}catch{}
   }
 }
+// Reopen a finding: reuse a tab already on that URL, otherwise open one, then flash the element.
+chrome.runtime.onMessage.addListener((message,sender,respond)=>{
+  if(message.type!=='reveal')return;
+  (async()=>{
+    const {reviewWindowId}=await chrome.storage.session.get('reviewWindowId');
+    const win=reviewWindowId?await chrome.windows.get(reviewWindowId).catch(()=>null):null;
+    const windowId=win?.id??(await chrome.windows.getLastFocused({windowTypes:['normal']})).id;
+    let tab=(await chrome.tabs.query({windowId})).find(t=>t.url===message.url);
+    if(tab)await chrome.tabs.update(tab.id,{active:true});
+    else{tab=await chrome.tabs.create({windowId,url:message.url});await new Promise(resolve=>{const done=(id,info)=>{if(id===tab.id&&info.status==='complete'){chrome.tabs.onUpdated.removeListener(done);resolve();}};chrome.tabs.onUpdated.addListener(done);setTimeout(resolve,15000);});}
+    const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},args:[message.selector],func:selector=>{
+      let el=null;try{el=document.querySelector(selector);}catch{}
+      if(!el)return {missing:true};
+      el.scrollIntoView({block:'center',behavior:'smooth'});
+      const ring=document.createElement('div');ring.style.cssText='position:fixed;pointer-events:none;z-index:2147483647;border:2px solid #e34b30;border-radius:2px;box-shadow:0 0 0 4px #e34b3033;transition:opacity 600ms';document.documentElement.append(ring);
+      const place=()=>{const r=el.getBoundingClientRect();Object.assign(ring.style,{left:r.x-3+'px',top:r.y-3+'px',width:r.width+6+'px',height:r.height+6+'px'});};
+      const t=setInterval(place,16);place();setTimeout(()=>{ring.style.opacity='0';},2200);setTimeout(()=>{clearInterval(t);ring.remove();},2900);
+      return {ok:true};
+    }});
+    return result||{ok:true};
+  })().then(respond,error=>respond({error:'Could not open that page: '+error.message}));
+  return true;
+});

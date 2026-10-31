@@ -18,9 +18,9 @@ await page.getByRole('button',{name:'Light mode',exact:true}).click();await expe
 
 const screenshot=(await page.screenshot()).toString('base64');await page.evaluate(s=>window.testScreenshot='data:image/png;base64,'+s,screenshot);
 await page.click('#page');await page.waitForSelector('#editor:not([hidden])',{timeout:5000}).catch(async e=>{console.log(await page.locator('body').innerText(),errors);throw e;});
-await page.click('#save');assert.equal(await page.locator('#comment').getAttribute('aria-invalid'),'true');
+await page.click('#save');assert.equal(await page.locator('#comment').getAttribute('aria-invalid'),'true');await expect(page.locator('#commentError')).toBeVisible();await expect(page.locator('.session')).toBeHidden();await expect(page.locator('footer')).toBeHidden();
 await page.fill('#comment','The header needs more space above it.');await page.locator('#editor summary').click();await page.fill('#component','Page header');await page.screenshot({path:'.context/editor.png',fullPage:true});await page.click('#save');
-await page.waitForSelector('.finding');assert.match(await page.locator('.finding').innerText(),/Page header/);
+await page.waitForSelector('.finding');assert.match(await page.locator('.finding').innerText(),/Page header/);await expect(page.locator('#sessionTitle')).toContainText('Example page ·');await expect(page.locator('.page-group')).toContainText('Example page');await expect(page.locator('.thumb img')).toHaveAttribute('src',/^data:image\/png/);await expect(page.locator('#statusWrap')).toBeVisible();await expect(page.locator('#filters')).toBeHidden();await expect(page.locator('#previewCaption')).toHaveCount(1);
 await page.reload();await expect(page.locator('.finding')).toHaveCount(1);
 await page.getByRole('button',{name:'Edit',exact:true}).click();await expect(page.locator('#comment')).toHaveValue('The header needs more space above it.');await page.fill('#comment','The header needs 24px of space above it.');await page.click('#save');await expect(page.locator('.finding')).toContainText('24px');
 await page.getByRole('button',{name:'Delete',exact:true}).click();await expect(page.locator('.finding')).toHaveCount(0);await page.click('#undo');await expect(page.locator('.finding')).toHaveCount(1);
@@ -57,7 +57,7 @@ await target.addScriptTag({path:'extension/picker.js'});await target.locator('#p
 await target.waitForFunction(()=>window.selection);const selected=await target.evaluate(()=>window.selection);assert.equal(selected.data.component,'PurchaseButton');assert.equal(selected.data.selector,'#purchase');assert.equal(selected.data.specs.padding,'16px');assert.ok(selected.data.rect.width>0);assert.equal(await target.locator('text=Click an element').count(),0);
 await target.evaluate(()=>{window.messages=[];window.chrome.runtime.sendMessage=async message=>{window.messages.push(message);return message.type==='selection'?{ok:true,id:'draft-1'}:{ok:true};};});
 await target.addScriptTag({path:'extension/picker.js'});await target.locator('h1').click();await target.waitForFunction(()=>window.messages.length===1);await target.waitForTimeout(100);await target.keyboard.type('Heading is too tight');await target.screenshot({path:'.context/inline-note.png'});await target.keyboard.press('Enter');
-assert.deepEqual(await target.evaluate(()=>window.messages.at(-1)),{type:'save-draft',id:'draft-1',comment:'Heading is too tight',next:false});
+assert.deepEqual(await target.evaluate(()=>window.messages.at(-1)),{type:'save-draft',id:'draft-1',comment:'Heading is too tight',severity:'Medium',next:false});
 await target.addScriptTag({path:'extension/picker.js'});await target.keyboard.press('Escape');assert.equal(await target.evaluate(()=>!!window.__hyperQA),false);
 // Page-level S / P keys fire only while a panel is open and never while typing.
 await target.setContent('<input id="q"><p>Page</p>');await target.evaluate(()=>{window.sent=[];window.__hyperQAHotkeys=false;window.chrome={storage:{local:{get:async()=>({panelOpen:true})},onChanged:{addListener(){}}},runtime:{sendMessage:async m=>{window.sent.push(m);}}};});
