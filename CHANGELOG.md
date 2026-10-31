@@ -4,6 +4,11 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 
 ## 1.1.0 — 1 Nov 2026
 
+### Clearer names and controls
+- **Readable element names** when a site doesn't expose component names: `Button · “Reply”`, `Text · “Please confirm…”`, `Image · “Google logo”` instead of `div`. Generated names like `styled__C` are skipped.
+- **Close button (×)** on the on-page note box discards the capture, same as `Esc`.
+- Simpler note box: no title, plain priority chips, one "↵ Save" hint.
+
 ### Rich notes
 - **Live formatting while you type:** bold, italic, `code`, links, list markers, and #tags are styled right in the note field (the Markdown markers stay visible but faded). The note box grows with your text.
 - Notes support Markdown: `- lists` and `1. lists` continue on `↵` (press `↵` on an empty item to end the list), `Tab` / `⇧Tab` indent, `⌘B` bold, `⌘I` italic, `⌘E` code, `⌘K` link, and `- [ ]` checklists.

@@ -42,6 +42,8 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
     const [stillActive] = await chrome.tabs.query({active:true,windowId:tab.windowId});
     const currentTab=await chrome.tabs.get(tab.id);
     if(stillActive?.id!==tab.id||currentTab.url!==message.data.url)throw new Error('The page changed during capture. Please select the element again.');
+    // Skip generated names (styled-components hashes, one-letter minified names); the readable label is more useful.
+    if(framework&&(/styled|__|^[A-Za-z_$]{1,2}$/.test(framework.component)))framework=null;
     const draft = {...message.data, ...(framework||{}), screenshot, id: crypto.randomUUID(), capturedAt: new Date().toISOString()};
     await chrome.storage.local.set({draft});
     // The page keeps focus so the reviewer can type straight into the inline note box.
