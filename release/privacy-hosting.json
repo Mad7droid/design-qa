@@ -1,0 +1,12 @@
+{
+  "projectId": "appgprj_6ae645038ea88191b23d02255d8e487f",
+  "status": "deployed_public",
+  "source": "sites/hyper-design-qa-privacy",
+  "previousPolicyUrl": "https://gist.github.com/maddymanifest/29db4c7f71acc5092967c09aa0dcd46d",
+  "url": "https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/",
+  "liveUrl": "https://hyper-design-qa-privacy.mad7droid.chatgpt.site",
+  "version": 1,
+  "versionId": "appgprj_6ae645038ea88191b23d02255d8e487f~appgver_93ceffa3c8c08191a553f6d3a380493f",
+  "commitSha": "fd9b8fb24c885abcbca34ab2e38d9211b541286d",
+  "deploymentId": "appgdep_6ae645694bd88191ab95329cfacebf19"
+}

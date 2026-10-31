@@ -1,0 +1,11 @@
+node_modules/
+.context/
+.DS_Store
+
+# Managed hosting checkout and local credentials
+sites/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
