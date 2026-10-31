@@ -54,7 +54,7 @@
     const host = document.createElement('div');
     host.style.cssText = 'position:fixed;z-index:2147483647;inset:auto';
     const root = host.attachShadow({mode:'closed'});
-    root.innerHTML = '<style>:host{all:initial}.box{position:fixed;width:320px;background:#19191c;color:#ededf0;border:1px solid #36363e;border-radius:10px;box-shadow:0 16px 48px #0007;font:13px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px}textarea{box-sizing:border-box;width:100%;min-height:64px;resize:vertical;background:#101012;color:inherit;border:1px solid #36363e;border-radius:6px;padding:8px 9px;font:inherit;outline:none}textarea:focus{border-color:#d8d4c9}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#a0a0ab;font-size:11px}kbd{font:inherit;border:1px solid #36363e;border-radius:4px;padding:0 4px;margin-right:3px}.title{font-size:11px;color:#a0a0ab;margin:0 0 6px}</style><div class="box" role="dialog" aria-label="Hyper-Design-QA note"><p class="title">Captured · What needs fixing?</p><textarea placeholder="Start typing your note…"></textarea><div class="foot"><span><kbd>↵</kbd>Save <kbd>⇧↵</kbd>New line</span><span><kbd>Esc</kbd>Discard</span></div></div>';
+    root.innerHTML = '<style>:host{all:initial}.box{position:fixed;width:320px;background:#19191c;color:#ededf0;border:1px solid #36363e;border-radius:10px;box-shadow:0 16px 48px #0007;font:13px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px}textarea{box-sizing:border-box;width:100%;min-height:64px;resize:vertical;background:#101012;color:inherit;border:1px solid #36363e;border-radius:6px;padding:8px 9px;font:inherit;outline:none}textarea:focus{border-color:#d8d4c9}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#a0a0ab;font-size:11px}kbd{font:inherit;border:1px solid #36363e;border-radius:4px;padding:0 4px;margin-right:3px}.title{font-size:11px;color:#a0a0ab;margin:0 0 6px}</style><div class="box" role="dialog" aria-label="Hyper-Design-QA note"><p class="title">Captured · What needs fixing? <span style="opacity:.7">#tags work · ⇧↵ new line</span></p><textarea placeholder="Start typing your note…"></textarea><div class="foot"><span><kbd>↵</kbd>Save <kbd>'+(/Mac/.test(navigator.platform)?'⌘':'Ctrl')+'↵</kbd>Save &amp; next</span><span><kbd>Esc</kbd>Discard</span></div></div>';
     const box = root.querySelector('.box'), field = root.querySelector('textarea');
     const r = rect || {x: innerWidth/2 - 160, y: 60, width: 320, height: 0};
     const below = r.y + r.height + 10, top = below + 150 < innerHeight ? below : Math.max(10, r.y - 150);
@@ -69,7 +69,7 @@
     field.addEventListener('keydown', e => {
       e.stopPropagation();
       if (e.key === 'Escape') { e.preventDefault(); chrome.runtime.sendMessage({type:'discard-draft'}).catch(()=>{}); close(); }
-      else if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!field.value.trim()) return; chrome.runtime.sendMessage({type:'save-draft', id, comment: field.value.trim()}).catch(()=>{}); close(); }
+      else if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!field.value.trim()) return; const next = e.metaKey || e.ctrlKey; chrome.runtime.sendMessage({type:'save-draft', id, comment: field.value.trim(), next}).catch(()=>{}); close(); }
     });
     // Keep page shortcuts from reacting while the reviewer types.
     for (const type of ['keyup','keypress']) field.addEventListener(type, e => e.stopPropagation());

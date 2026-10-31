@@ -27,17 +27,23 @@ if(mac)for(const k of document.querySelectorAll('kbd'))k.textContent={Alt:'⌥',
 function pushUndo(message,fn){undoStack.push(fn);$('undo').hidden=false;status(message);}
 const fresh=()=>({id:crypto.randomUUID(),name:'Untitled design review',createdAt:new Date().toISOString(),findings:[]});
 const parseLinks=text=>[...new Set(String(text||'').split(/\s+/).map(x=>x.trim()).filter(x=>/^https?:\/\/\S+$/i.test(x)))];
+const TAGS=['Spacing','Alignment','Typography','Colour','Copy','Accessibility','Responsive','Interaction'];
+let selectedTags=new Set();
+const hashTags=text=>[...String(text||'').matchAll(/#([a-z][\w-]*)/gi)].map(m=>TAGS.find(t=>t.toLowerCase()===m[1].toLowerCase())||m[1]);
+const tagsFor=comment=>[...new Set([...selectedTags,...hashTags(comment)])];
+function renderTags(){$('tags').replaceChildren(...TAGS.map((t,i)=>{const b=document.createElement('button');b.type='button';b.textContent=t;b.title=`${mac?'⌥':'Alt+'}${i+1}`;b.setAttribute('aria-pressed',String(selectedTags.has(t)));b.onclick=()=>toggleTag(t);return b;}));}
+function toggleTag(t){selectedTags.has(t)?selectedTags.delete(t):selectedTags.add(t);renderTags();$('comment').dispatchEvent(new Event('input'));}
 const status=(text,error=false)=>{$('status').textContent=text;$('statusWrap').hidden=!text;$('statusWrap').classList.toggle('error',error);};
 async function persist(){await chrome.storage.local.set({session});render();}
 function render(){
   $('restorePrevious').hidden=!hasPrevious;$('sessionTitle').textContent=session.name;if($('renameForm').hidden)$('sessionName').value=session.name;if(document.activeElement!==$('sessionLinks'))$('sessionLinks').value=(session.links||[]).join('\n');$('sessionLinksCount').textContent=session.links?.length?`· ${session.links.length}`:'';
   $('count').textContent=`${session.findings.length} ${session.findings.length===1?'finding':'findings'}`;$('badge').textContent=String(session.findings.length).padStart(2,'0');
-  $('empty').hidden=!!session.findings.length;$('export').disabled=!session.findings.length;$('exportMd').disabled=!session.findings.length;$('exportHint').textContent=session.findings.length?'Includes Markdown, screenshots, and captured details.':'Add a finding to create your report.';
+  $('empty').hidden=!!session.findings.length;$('export').disabled=!session.findings.length;$('copyMd').disabled=!session.findings.length;$('exportMd').disabled=!session.findings.length;$('exportHint').textContent=session.findings.length?'Includes Markdown, screenshots, and captured details.':'Add a finding to create your report.';
   $('findings').replaceChildren();
   for(const [i,f] of session.findings.entries()){
     const card=document.createElement('article');card.className='finding';
     const title=document.createElement('h3');const number=document.createElement('span');number.className='finding-number';number.textContent=`QA-${String(i+1).padStart(2,'0')}`;const name=document.createElement('span');name.className='finding-title';name.textContent=f.component;title.append(number,name);
-    const meta=document.createElement('small');meta.textContent=`${f.severity} · ${new URL(f.url).hostname}`;
+    const meta=document.createElement('small');meta.textContent=`${f.severity} · ${new URL(f.url).hostname}${f.tags?.length?' · '+f.tags.map(t=>'#'+t.toLowerCase()).join(' '):''}`;
     const comment=document.createElement('p');comment.textContent=f.comment;
     const linkList=document.createElement('div');linkList.className='finding-links';for(const url of f.links||[]){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';a.textContent=/figma\.com/i.test(url)?'Figma ↗':new URL(url).hostname+' ↗';linkList.append(a);}
     const actions=document.createElement('div');actions.className='actions';
@@ -56,17 +62,19 @@ async function annotate(f){
   if(f.rect){const sx=canvas.width/f.viewport.width,sy=canvas.height/f.viewport.height;ctx.strokeStyle='#f04d2e';ctx.lineWidth=3*Math.max(sx,sy);ctx.strokeRect(f.rect.x*sx,f.rect.y*sy,f.rect.width*sx,f.rect.height*sy);}
   return canvas.toDataURL('image/png');
 }
-async function showDraft(f){draft=f;document.body.classList.add('editing');$('editor').hidden=false;$('editorTitle').textContent=editing?'Edit finding':'Describe the issue';const preview=annotate(f);$('component').value=f.component;$('location').textContent=f.selector+' · '+f.url;$('comment').value=f.comment||'';$('links').value=(f.links||[]).join('\n');$('severity').value=f.severity||'Medium';$('comment').focus();status('');preview.then(src=>{if(draft?.id===f.id)$('preview').src=src;},e=>status(e.message,true));}
+async function showDraft(f){draft=f;document.body.classList.add('editing');$('editor').hidden=false;$('editorTitle').textContent=editing?'Edit finding':'Describe the issue';const preview=annotate(f);$('component').value=f.component;$('location').textContent=f.selector+' · '+f.url;$('comment').value=f.comment||'';$('links').value=(f.links||[]).join('\n');selectedTags=new Set((f.tags||[]).filter(t=>TAGS.includes(t)));renderTags();$('severity').value=f.severity||'Medium';$('comment').focus();status('');preview.then(src=>{if(draft?.id===f.id)$('preview').src=src;},e=>status(e.message,true));}
 $('pick').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;const tab=await activeTab();await chrome.scripting.executeScript({target:{tabId:tab.id},files:['picker.js']});status('Click an element on the page. Press Esc to cancel.');});
 $('page').onclick=()=>run(async()=>{if(draft&&!confirm('Replace your unfinished note with a new capture?'))return;const tab=await activeTab();const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});if(floating){const current=await chrome.windows.getCurrent();await chrome.windows.update(current.id,{focused:true});}});
-$('save').onclick=()=>run(async()=>{if(!draft)return;if(!$('comment').value.trim()){$('comment').setAttribute('aria-invalid','true');status('Describe what needs fixing before saving.',true);$('comment').focus();return;}const f={...draft,component:$('component').value.trim()||draft.component,comment:$('comment').value.trim(),links:parseLinks($('links').value),severity:$('severity').value};const index=session.findings.findIndex(x=>x.id===f.id);if(index<0)session.findings.push(f);else session.findings[index]=f;await persist();await clearDraft();status('Finding saved. Keep browsing to add more.');});
-async function clearDraft(){await draftQueue;await chrome.storage.local.remove('draft');document.body.classList.remove('editing');$('comment').removeAttribute('aria-invalid');draft=null;editing=false;$('editor').hidden=true;}
+$('save').onclick=()=>run(async()=>{if(!draft)return;if(!$('comment').value.trim()){$('comment').setAttribute('aria-invalid','true');status('Describe what needs fixing before saving.',true);$('comment').focus();return;}const f={...draft,component:$('component').value.trim()||draft.component,comment:$('comment').value.trim(),links:parseLinks($('links').value),tags:tagsFor($('comment').value),severity:$('severity').value};const index=session.findings.findIndex(x=>x.id===f.id);if(index<0)session.findings.push(f);else session.findings[index]=f;await persist();await clearDraft();status('Finding saved. Keep browsing to add more.');});
+async function clearDraft(){await draftQueue;selectedTags=new Set();await chrome.storage.local.remove('draft');document.body.classList.remove('editing');$('comment').removeAttribute('aria-invalid');draft=null;editing=false;$('editor').hidden=true;}
 // Discarding is instant and reversible, so no confirmation is needed.
 async function discardDraft(){if(!draft)return;const saved=draft,wasEditing=editing;await clearDraft();pushUndo(wasEditing?'Changes discarded.':'Capture discarded.',async()=>{draft=saved;await chrome.storage.local.set({draft:saved});editing=wasEditing;await showDraft(saved);});$('pick').focus();}
 $('discard').onclick=()=>run(discardDraft);
 $('sessionLinks').addEventListener('change',()=>run(async()=>{session={...session,links:parseLinks($('sessionLinks').value)};await persist();}));
 // The on-page note box saves through the panel so validation and undo stay in one place.
-chrome.runtime.onMessage?.addListener(message=>{if(message.type!=='save-draft'||!draft||message.id!==draft.id)return;$('comment').value=message.comment;draft={...draft,comment:message.comment};$('save').click();});
+chrome.runtime.onMessage?.addListener(message=>{if(message.type!=='save-draft'||!draft||message.id!==draft.id)return;$('comment').value=message.comment;draft={...draft,comment:message.comment};$('save').click();if(message.next){const again=()=>busy?setTimeout(again,30):draft||$('pick').click();setTimeout(again,30);}});
+async function copyReport(){await navigator.clipboard.writeText(markdown(session));status('Report copied as Markdown. Screenshots aren’t included; use Export for those.');}
+$('copyMd').onclick=()=>run(copyReport);
 chrome.runtime.onMessage?.addListener(message=>{if(message.type==='discard-draft')run(discardDraft);});
 function closeRename(){ $('renameForm').hidden=true;$('sessionDisplay').hidden=false;$('nameError').hidden=true;$('sessionName').removeAttribute('aria-invalid');$('rename').focus(); }
 $('rename').onclick=()=>{ $('sessionName').value=session.name;$('sessionDisplay').hidden=true;$('renameForm').hidden=false;$('sessionName').focus();$('sessionName').select(); };
@@ -87,7 +95,7 @@ async function exportReport(){
 $('export').onclick=()=>run(exportReport);
 // Persist unfinished comments, including when the browser panel is closed.
 let draftQueue=Promise.resolve();
-for(const id of ['comment','component','severity','links']) $(id).addEventListener('input',()=>{if(!draft)return;draft={...draft,comment:$('comment').value,component:$('component').value,severity:$('severity').value,links:parseLinks($('links').value)};$('comment').removeAttribute('aria-invalid');const snapshot=draft;draftQueue=draftQueue.then(()=>chrome.storage.local.set({draft:snapshot})).catch(e=>status(e.message));});
+for(const id of ['comment','component','severity','links']) $(id).addEventListener('input',()=>{if(!draft)return;draft={...draft,comment:$('comment').value,component:$('component').value,severity:$('severity').value,links:parseLinks($('links').value),tags:tagsFor($('comment').value)};$('comment').removeAttribute('aria-invalid');const snapshot=draft;draftQueue=draftQueue.then(()=>chrome.storage.local.set({draft:snapshot})).catch(e=>status(e.message));});
 chrome.storage.onChanged.addListener((changes,area)=>{if(area==='local'&&changes.draft?.newValue&&changes.draft.newValue.id!==draft?.id){editing=false;showDraft(changes.draft.newValue).catch(e=>status(e.message));}});
 // Keep the two surfaces current if Chrome leaves the side panel open.
 chrome.storage.onChanged.addListener((changes,area)=>{
@@ -108,6 +116,8 @@ $('closeShortcuts').onclick=()=>$('shortcutsDialog').close();
 document.addEventListener('keydown',e=>{
  if(e.defaultPrevented||e.isComposing||document.querySelector('dialog[open]'))return;
  const mod=mac?e.metaKey:e.ctrlKey,key=e.key.toLowerCase(),inField=typing(document.activeElement);
+ if(mod&&e.shiftKey&&key==='c'&&session.findings.length){e.preventDefault();run(copyReport);return;}
+ if(draft&&e.altKey&&/^Digit[1-8]$/.test(e.code)){e.preventDefault();toggleTag(TAGS[+e.code.slice(5)-1]);return;}
  if(draft&&mod&&e.key==='Enter'){e.preventDefault();$('save').click();return;}
  if(draft&&e.key==='Escape'&&!$('renameForm').contains(document.activeElement)){e.preventDefault();run(discardDraft);return;}
  if(inField)return;
@@ -123,4 +133,5 @@ document.addEventListener('keydown',e=>{
 const focusNote=()=>{if(draft&&!$('editor').hidden&&!typing(document.activeElement))$('comment').focus();};
 window.addEventListener('focus',focusNote);
 $('editor').addEventListener('click',e=>{if(!e.target.closest('button,input,textarea,select,summary,a,label,details'))$('comment').focus();});
+renderTags();
 const stored=await chrome.storage.local.get(['session','draft','previousSession','theme']);if(stored.theme)applyTheme(stored.theme);hasPrevious=!!stored.previousSession;session=stored.session||fresh();if(!stored.session)await persist();render();if(stored.draft)await showDraft(stored.draft);

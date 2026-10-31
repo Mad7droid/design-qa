@@ -161,3 +161,10 @@ dialog h3{font-size:12px;font-weight:500;margin:4px 0 10px}
 .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .finding-links{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
 .finding-links a{font-size:11px;color:var(--secondary);overflow-wrap:anywhere}
+.tag-row{display:flex;gap:10px;align-items:flex-start;margin:0 0 16px}
+.tag-label{font-size:12px;font-weight:500;color:var(--secondary);padding-top:5px;min-width:52px}
+#tags{display:flex;flex-wrap:wrap;gap:6px}
+#tags button{min-height:26px;padding:2px 9px;font-size:11px;font-weight:500;border-radius:13px;color:var(--secondary);background:none;border-color:var(--control-border)}
+#tags button[aria-pressed="true"]{color:var(--accent-text);background:var(--accent);border-color:var(--accent)}
+.finding-tags{color:var(--secondary)}
+.export-alt{display:flex;justify-content:center;gap:4px;flex-wrap:wrap}

@@ -15,6 +15,9 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 
 - **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
 - **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.
+- **Save & next** (`⌘↵` in the note box) for marking many issues in a row.
+- **Quick tags** via chips, `⌥1`–`⌥8`, or `#hashtags` in the note.
+- **Copy Markdown** (`⌘⇧C`) to paste a report anywhere.
 - **Links per finding and per session.** Attach Figma frames, tickets, or specs. They're included in the export.
 - **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts. Global shortcuts work from any page.
 - **Works across pages and tabs.** Findings and unfinished notes are saved on your device as you go.
@@ -62,6 +65,9 @@ Edit or delete findings from their cards. Delete, discard, and new session can a
 | Undo delete, discard, or new session | `⌘Z` / `Ctrl+Z` |
 | Edit / delete a focused finding | `↵` / `Delete` |
 | Export report | `E` |
+| Copy report as Markdown | `⌘⇧C` / `Ctrl+Shift+C` |
+| Toggle tag 1–8 | `⌥1`–`⌥8` / `Alt+1`–`Alt+8` |
+| Save & select next (on-page box) | `⌘↵` / `Ctrl+↵` |
 | Show all shortcuts | `?` |
 
 | From any web page | |
