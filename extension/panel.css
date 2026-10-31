@@ -168,3 +168,7 @@ dialog h3{font-size:12px;font-weight:500;margin:4px 0 10px}
 #tags button[aria-pressed="true"]{color:var(--accent-text);background:var(--accent);border-color:var(--accent)}
 .finding-tags{color:var(--secondary)}
 .export-alt{display:flex;justify-content:center;gap:4px;flex-wrap:wrap}
+#copyMd{transition:color 120ms ease,background-color 120ms ease}
+#copyMd.copied{color:var(--success,#7fd49b);background:var(--hover)}
+#copyMd.copy-failed{color:var(--error)}
+.copy-live{font-size:11px;color:var(--secondary);min-height:16px;margin:4px 0 0}

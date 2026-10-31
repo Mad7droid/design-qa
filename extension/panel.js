@@ -73,7 +73,9 @@ $('discard').onclick=()=>run(discardDraft);
 $('sessionLinks').addEventListener('change',()=>run(async()=>{session={...session,links:parseLinks($('sessionLinks').value)};await persist();}));
 // The on-page note box saves through the panel so validation and undo stay in one place.
 chrome.runtime.onMessage?.addListener(message=>{if(message.type!=='save-draft'||!draft||message.id!==draft.id)return;$('comment').value=message.comment;draft={...draft,comment:message.comment};$('save').click();if(message.next){const again=()=>busy?setTimeout(again,30):draft||$('pick').click();setTimeout(again,30);}});
-async function copyReport(){await navigator.clipboard.writeText(markdown(session));status('Report copied as Markdown. Screenshots aren’t included; use Export for those.');}
+// Feedback sits on the button itself because the status bar is often scrolled out of view.
+let copyTimer;
+async function copyReport(){const b=$('copyMd');clearTimeout(copyTimer);try{await navigator.clipboard.writeText(markdown(session));}catch{b.classList.add('copy-failed');b.firstChild.textContent='Couldn’t copy ';copyTimer=setTimeout(()=>{b.classList.remove('copy-failed');b.firstChild.textContent='Copy Markdown ';},2500);throw new Error('Could not copy. Click the panel first, then try again.');}b.classList.add('copied');b.firstChild.textContent='✓ Copied ';$('copyLive').textContent=`Report copied: ${session.findings.length} ${session.findings.length===1?'finding':'findings'}, without screenshots.`;copyTimer=setTimeout(()=>{b.classList.remove('copied');b.firstChild.textContent='Copy Markdown ';$('copyLive').textContent='';},2000);}
 $('copyMd').onclick=()=>run(copyReport);
 chrome.runtime.onMessage?.addListener(message=>{if(message.type==='discard-draft')run(discardDraft);});
 function closeRename(){ $('renameForm').hidden=true;$('sessionDisplay').hidden=false;$('nameError').hidden=true;$('sessionName').removeAttribute('aria-invalid');$('rename').focus(); }

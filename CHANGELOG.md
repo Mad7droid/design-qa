@@ -7,7 +7,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 ### Faster reviewing
 - **Save & next:** `⌘↵` / `Ctrl+↵` in the on-page note box saves and starts selecting the next element right away.
 - **Quick tags:** Spacing, Alignment, Typography, Colour, Copy, Accessibility, Responsive, Interaction. Click a chip, press `⌥1`–`⌥8`, or type `#spacing` in your note. Tags appear on cards and in the export.
-- **Copy Markdown:** `⌘⇧C` / `Ctrl+Shift+C` copies the whole report to paste into Claude, Linear, or Slack.
+- **Copy Markdown:** `⌘⇧C` / `Ctrl+Shift+C` copies the whole report to paste into Claude, Linear, or Slack. The button confirms with "✓ Copied".
 
 ### Type as soon as you capture
 - After you select an element, a note box opens beside it on the page with the cursor ready. `↵` saves, `⇧↵` adds a line, `Esc` discards. Clicking away keeps the draft for the panel.
