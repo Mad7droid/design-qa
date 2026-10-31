@@ -61,7 +61,7 @@ async function runCommand(command,tab,openPanel){
   // Open synchronously: the shortcut's user gesture expires after the first await.
   if(openPanel)chrome.sidePanel.open({windowId:tab.windowId}).catch(()=>{});
   const {floatingWindowId}=await chrome.storage.session.get('floatingWindowId');
-  if(command==='select-element')await chrome.scripting.executeScript({target:{tabId:tab.id},files:['picker.js']});
+  if(command==='select-element')await chrome.scripting.executeScript({target:{tabId:tab.id},files:['format.js','picker.js']});
   if(command==='capture-page'){
     const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});
     const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});

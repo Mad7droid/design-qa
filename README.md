@@ -13,6 +13,7 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 
 ## Highlights
 
+- **Rich notes** with Markdown lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
 - **Precise selection.** A label shows the element name and size; `↑`/`↓` walks to the parent or child.
 - **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
 - **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.

@@ -189,3 +189,11 @@ body.editing .session,body.editing #findingsSection,body.editing footer{display:
 .thumb img{display:block;width:100%;height:100%;object-fit:cover}
 :root[data-theme="light"] input::placeholder,:root[data-theme="light"] textarea::placeholder{color:#66665e}
 .filters[hidden]{display:none}
+.finding .comment{font-size:12px;line-height:1.6;margin:8px 0 0;overflow-wrap:anywhere}
+.finding .comment p{margin:0 0 4px}
+.finding .comment ul,.finding .comment ol{margin:0 0 4px;padding-left:18px}
+.finding .comment li.task{list-style:none;margin-left:-14px}
+.finding .comment code,.field-hint code{font:11px ui-monospace,monospace;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:0 3px}
+.finding .comment a{color:var(--text)}
+.field-hint kbd{height:16px;min-width:0}
+.finding .comment p{white-space:normal}

@@ -4,6 +4,10 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 
 ## 1.1.0 — 1 Nov 2026
 
+### Rich notes
+- Notes support Markdown: `- lists` and `1. lists` continue on `↵` (press `↵` on an empty item to end the list), `Tab` / `⇧Tab` indent, `⌘B` bold, `⌘I` italic, `⌘E` code, `⌘K` link, and `- [ ]` checklists.
+- Works in both the on-page note box and the panel. Finding cards show the formatting; the report keeps the Markdown as written.
+
 ### UX review fixes
 - **Picker:** live label with element name and size; `↑`/`↓` moves to parent/child; `↵` selects. These keys work whether focus is on the page or the panel.
 - **Note box:** opens beside the element so the outline stays visible; set priority with `⌥1`–`⌥3`; links typed in the note are added to Links; one-word notes get a gentle nudge (press `↵` again to save anyway).
