@@ -75,5 +75,63 @@ globalThis.hyperFormat = (() => {
     }
     return out;
   }
-  return {key, render};
+  // Live styling: a backdrop draws formatted text behind a transparent textarea.
+  // Styles never change character widths (bold uses a stroke, not a heavier weight), so the caret stays aligned.
+  const css = `.hf-live{position:relative;display:block}
+.hf-back{position:absolute;inset:0;overflow:hidden;pointer-events:none;background:var(--hf-bg,transparent);white-space:pre-wrap;overflow-wrap:break-word;border-color:transparent!important;color:var(--hf-text,inherit)}
+.hf-field{position:relative;background:transparent!important;color:transparent!important;caret-color:var(--hf-text,#ededf0)}
+.hf-field::placeholder{color:var(--hf-placeholder,#8a8a93)}
+.hf-field::selection{color:transparent;background:rgba(130,150,255,.35)}
+.hf-dim{opacity:.4}
+.hf-b{-webkit-text-stroke:.45px currentColor}
+.hf-i{color:var(--hf-italic,#c8c3b6)}
+.hf-code{background:rgba(127,127,127,.2);border-radius:3px}
+.hf-link{text-decoration:underline;text-underline-offset:2px}
+.hf-tag,.hf-list{color:var(--hf-accent,#d8c48f)}`;
+  const TOKENS = /(\*\*[^*\n]+\*\*|`[^`\n]+`|\[[^\]\n]+\]\(https?:\/\/[^)\s]+\)|(?<![\w*_])[_*][^_*\n]+[_*](?![\w*_])|https?:\/\/[^\s)]+|(?<![\w#&])#[A-Za-z][\w-]*)/g;
+  const span = (cls, text) => { const s = document.createElement('span'); s.className = cls; s.textContent = text; return s; };
+  function paint(text) {
+    const out = document.createDocumentFragment();
+    text.split('\n').forEach((line, n) => {
+      if (n) out.append('\n');
+      const m = line.match(/^(\s*)(- \[[ xX]\]|[-*•]|\d+[.)])(\s)/);
+      if (m) { out.append(m[1], span('hf-list', m[2]), m[3]); line = line.slice(m[0].length); }
+      let last = 0;
+      for (const t of line.matchAll(TOKENS)) {
+        out.append(line.slice(last, t.index)); last = t.index + t[0].length; const v = t[0];
+        if (v.startsWith('**')) { const b = span('hf-b', ''); b.append(span('hf-dim', '**'), v.slice(2, -2), span('hf-dim', '**')); out.append(b); }
+        else if (v.startsWith('`')) { const c = span('hf-code', ''); c.append(span('hf-dim', '`'), v.slice(1, -1), span('hf-dim', '`')); out.append(c); }
+        else if (v.startsWith('[')) { const i = v.indexOf(']('); out.append(span('hf-dim', '['), span('hf-link', v.slice(1, i)), span('hf-dim', v.slice(i))); }
+        else if (v.startsWith('#')) out.append(span('hf-tag', v));
+        else if (/^https?:/.test(v)) out.append(span('hf-link', v));
+        else { const i = span('hf-i', ''); i.append(span('hf-dim', v[0]), v.slice(1, -1), span('hf-dim', v[0])); out.append(i); }
+      }
+      out.append(line.slice(last));
+    });
+    return out;
+  }
+  function live(field, root = document) {
+    if (field.__hfLive) return; field.__hfLive = true;
+    if (!root.adoptedStyleSheets.some(x => x.__hf)) { const sheet = new CSSStyleSheet(); sheet.replaceSync(css); sheet.__hf = true; root.adoptedStyleSheets = [...root.adoptedStyleSheets, sheet]; }
+    const wrap = document.createElement('div'), back = document.createElement('div');
+    wrap.className = 'hf-live'; back.className = 'hf-back'; back.setAttribute('aria-hidden', 'true');
+    field.before(wrap); wrap.append(back, field);
+    const metrics = () => {
+      const cs = getComputedStyle(field);
+      for (const p of ['font','letterSpacing','wordSpacing','textIndent','tabSize','lineHeight','paddingTop','paddingLeft','paddingBottom','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderStyle','borderRadius','boxSizing']) back.style[p] = cs[p];
+      // Leave room for the textarea's scrollbar so lines wrap at the same place.
+      const bar = field.offsetWidth - field.clientWidth - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth);
+      back.style.paddingRight = parseFloat(cs.paddingRight) + Math.max(0, bar) + 'px';
+    };
+    // Grow with the text up to a cap, then scroll.
+    const grow = () => { if (!field.dataset.hfMax) return; field.style.height = 'auto'; field.style.height = Math.min(field.scrollHeight + 2, +field.dataset.hfMax) + 'px'; };
+    const sync = () => { back.replaceChildren(paint(field.value + '\n')); grow(); back.scrollTop = field.scrollTop; };
+    metrics(); field.classList.add('hf-field'); sync();
+    field.addEventListener('input', sync); field.addEventListener('scroll', () => { back.scrollTop = field.scrollTop; });
+    new ResizeObserver(() => { metrics(); back.scrollTop = field.scrollTop; }).observe(field);
+    // Programmatic value changes (restoring drafts, editing a finding) repaint too.
+    const desc = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value');
+    Object.defineProperty(field, 'value', {configurable: true, get() { return desc.get.call(this); }, set(v) { desc.set.call(this, v); sync(); }});
+  }
+  return {key, render, live};
 })();

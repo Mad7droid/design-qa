@@ -13,7 +13,7 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 
 ## Highlights
 
-- **Rich notes** with Markdown lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
+- **Rich notes, styled as you type,** with Markdown lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
 - **Precise selection.** A label shows the element name and size; `↑`/`↓` walks to the parent or child.
 - **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
 - **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.
@@ -22,7 +22,7 @@ Hyper-Design-QA is a Chrome/Brave extension for design QA. Select any element on
 - **Copy Markdown** (`⌘⇧C`) to paste a report anywhere.
 - **Links per finding and per session.** Attach Figma frames, tickets, or specs. They're included in the export.
 - **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts. Global shortcuts work from any page.
-- **Findings grouped by page** with thumbnails, a priority filter, and **Open** to jump back and re-highlight the element.
+- **Findings grouped by page** with thumbnails (click to jump back and re-highlight the element), a priority filter, and **Figma link** buttons.
 - **Works across pages and tabs.** Findings and unfinished notes are saved on your device as you go.
 - **Side panel or floating window**, light and dark themes.
 - **AI-ready export:** `report.md`, `session.json`, and marked PNGs in one ZIP.

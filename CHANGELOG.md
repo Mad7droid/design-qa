@@ -5,6 +5,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 ## 1.1.0 — 1 Nov 2026
 
 ### Rich notes
+- **Live formatting while you type:** bold, italic, `code`, links, list markers, and #tags are styled right in the note field (the Markdown markers stay visible but faded). The note box grows with your text.
 - Notes support Markdown: `- lists` and `1. lists` continue on `↵` (press `↵` on an empty item to end the list), `Tab` / `⇧Tab` indent, `⌘B` bold, `⌘I` italic, `⌘E` code, `⌘K` link, and `- [ ]` checklists.
 - Works in both the on-page note box and the panel. Finding cards show the formatting; the report keeps the Markdown as written.
 
@@ -13,7 +14,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 - **Note box:** opens beside the element so the outline stays visible; set priority with `⌥1`–`⌥3`; links typed in the note are added to Links; one-word notes get a gentle nudge (press `↵` again to save anyway).
 - **Feedback** now appears as a toast at the bottom of the panel, with Undo; the required-note error shows under the field.
 - **Focused editor:** while describing an issue, the session, list, and export controls step aside.
-- **Findings** are grouped by page, show a thumbnail, and have **Open** to reopen the page and re-highlight the element. Priority filter appears from 4 findings.
+- **Findings** are grouped by page, show a thumbnail, and show **Figma link** / **Design link** buttons when links are attached. Clicking the thumbnail reopens the page and re-highlights the element. Priority filter appears from 4 findings.
 - **Close-up screenshots** of the element are added to the export and report.
 - **Auto-named sessions** from the first page reviewed and the date.
 - Removed the "On-device storage" header line (now in the Privacy link); export hint explains Copy vs Export; light-mode placeholder contrast raised to AA.
