@@ -50,10 +50,16 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
   return true;
 });
 // Keyboard shortcuts work from the page itself, so reviewers never have to reach for the panel.
-chrome.commands.onCommand.addListener(async(command,tab)=>{
+chrome.commands.onCommand.addListener((command,tab)=>runCommand(command,tab,true).catch(()=>{}));
+chrome.runtime.onMessage.addListener((message,sender)=>{if(message.type==='hotkey'&&sender.tab)runCommand(message.command,sender.tab,false).catch(()=>{});});
+// Page S / P keys only listen while a panel is connected.
+let panels=0;
+chrome.storage.local.set({panelOpen:false});
+chrome.runtime.onConnect.addListener(port=>{if(port.name!=='panel')return;panels++;chrome.storage.local.set({panelOpen:true});port.onDisconnect.addListener(()=>{panels=Math.max(0,panels-1);if(!panels)chrome.storage.local.set({panelOpen:false});});});
+async function runCommand(command,tab,openPanel){
   if(!tab?.id||!/^https?:|^file:/.test(tab.url||''))return;
   // Open synchronously: the shortcut's user gesture expires after the first await.
-  chrome.sidePanel.open({windowId:tab.windowId}).catch(()=>{});
+  if(openPanel)chrome.sidePanel.open({windowId:tab.windowId}).catch(()=>{});
   const {floatingWindowId}=await chrome.storage.session.get('floatingWindowId');
   if(command==='select-element')await chrome.scripting.executeScript({target:{tabId:tab.id},files:['picker.js']});
   if(command==='capture-page'){
@@ -62,4 +68,4 @@ chrome.commands.onCommand.addListener(async(command,tab)=>{
     await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});
     if(floatingWindowId)try{await chrome.windows.update(floatingWindowId,{focused:true});}catch{}
   }
-});
+}

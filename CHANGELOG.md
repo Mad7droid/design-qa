@@ -19,6 +19,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 - Exports include them under **Reference links** (session) and **Links** (per finding).
 
 ### Keyboard shortcuts
+- `S` select and `P` capture page also work on the web page itself while the panel is open (never while typing in a field).
 - Panel: `S` select, `P` capture page, `⌘↵` save, `Esc`/`Delete` discard, `C` focus note, `⌘Z` undo, `E` export, `?` shortcut list.
 - Findings are focusable: `↵` edits, `Delete` removes.
 - Global: `⌥⇧Q` open, `⌥⇧S` select, `⌥⇧P` capture page, from any web page.

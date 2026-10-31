@@ -59,5 +59,9 @@ await target.evaluate(()=>{window.messages=[];window.chrome.runtime.sendMessage=
 await target.addScriptTag({path:'extension/picker.js'});await target.locator('h1').click();await target.waitForFunction(()=>window.messages.length===1);await target.waitForTimeout(100);await target.keyboard.type('Heading is too tight');await target.screenshot({path:'.context/inline-note.png'});await target.keyboard.press('Enter');
 assert.deepEqual(await target.evaluate(()=>window.messages.at(-1)),{type:'save-draft',id:'draft-1',comment:'Heading is too tight',next:false});
 await target.addScriptTag({path:'extension/picker.js'});await target.keyboard.press('Escape');assert.equal(await target.evaluate(()=>!!window.__hyperQA),false);
-assert.deepEqual(errors,[]);console.log('Browser checks passed: capture, required note, save, reload, edit, delete/undo, keyboard shortcuts, ZIP download, narrow layout, element picker, Escape.');
+// Page-level S / P keys fire only while a panel is open and never while typing.
+await target.setContent('<input id="q"><p>Page</p>');await target.evaluate(()=>{window.sent=[];window.__hyperQAHotkeys=false;window.chrome={storage:{local:{get:async()=>({panelOpen:true})},onChanged:{addListener(){}}},runtime:{sendMessage:async m=>{window.sent.push(m);}}};});
+await target.addScriptTag({path:'extension/hotkeys.js'});await target.locator('p').click();await target.keyboard.press('s');await target.keyboard.press('p');await target.locator('#q').click();await target.keyboard.press('s');
+assert.deepEqual(await target.evaluate(()=>window.sent.map(m=>m.command)),['select-element','capture-page']);
+assert.deepEqual(errors,[]);console.log('Browser checks passed: capture, required note, save, reload, edit, delete/undo, keyboard shortcuts, ZIP download, narrow layout, element picker, Escape, page S/P keys.');
 } finally {await browser.close();}

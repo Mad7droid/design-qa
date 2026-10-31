@@ -134,4 +134,5 @@ const focusNote=()=>{if(draft&&!$('editor').hidden&&!typing(document.activeEleme
 window.addEventListener('focus',focusNote);
 $('editor').addEventListener('click',e=>{if(!e.target.closest('button,input,textarea,select,summary,a,label,details'))$('comment').focus();});
 renderTags();
+chrome.runtime.connect?.({name:'panel'});
 const stored=await chrome.storage.local.get(['session','draft','previousSession','theme']);if(stored.theme)applyTheme(stored.theme);hasPrevious=!!stored.previousSession;session=stored.session||fresh();if(!stored.session)await persist();render();if(stored.draft)await showDraft(stored.draft);
