@@ -28,8 +28,13 @@
     window.removeEventListener('pointermove',move,true);
     window.removeEventListener('click',select,true);
     window.removeEventListener('keydown',key,true);
+    chrome.runtime.onMessage?.removeListener(relay);
     delete window.__hyperQA;
+    if (!selecting) chrome.runtime.sendMessage({type:'picker-ended'}).catch(()=>{});
   }
+  // Keys pressed while the panel has focus are forwarded here, so ↑/↓ work without clicking the page first.
+  function relay(message) { if (message?.type === 'picker-key') key({key: message.key, preventDefault(){}, stopImmediatePropagation(){}, composedPath: () => [target]}); }
+  let selecting = false;
   function key(e) {
     if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
     if (!target) return;
@@ -54,6 +59,8 @@
   async function select(e) {
     e.preventDefault(); e.stopImmediatePropagation();
     const el=target||e.composedPath()[0];
+    if (!(el instanceof Element)) return;
+    selecting = true;
     const r=el.getBoundingClientRect(), s=getComputedStyle(el);
     const specs={};
     for(const p of ['display','position','box-sizing','color','background-color','font-family','font-size','font-weight','line-height','letter-spacing','text-align','padding','margin','gap','border','border-radius','box-shadow','opacity','align-items','justify-content']) specs[p]=s.getPropertyValue(p);
@@ -125,4 +132,5 @@
   window.addEventListener('pointermove',move,true);
   window.addEventListener('click',select,true);
   window.addEventListener('keydown',key,true);
+  chrome.runtime.onMessage?.addListener(relay);
 })();

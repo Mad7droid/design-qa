@@ -5,7 +5,7 @@ All notable changes to Hyper-Design-QA. Versions match `extension/manifest.json`
 ## 1.1.0 — 1 Nov 2026
 
 ### UX review fixes
-- **Picker:** live label with element name and size; `↑`/`↓` moves to parent/child; `↵` selects.
+- **Picker:** live label with element name and size; `↑`/`↓` moves to parent/child; `↵` selects. These keys work whether focus is on the page or the panel.
 - **Note box:** opens beside the element so the outline stays visible; set priority with `⌥1`–`⌥3`; links typed in the note are added to Links; one-word notes get a gentle nudge (press `↵` again to save anyway).
 - **Feedback** now appears as a toast at the bottom of the panel, with Undo; the required-note error shows under the field.
 - **Focused editor:** while describing an issue, the session, list, and export controls step aside.

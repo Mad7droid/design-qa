@@ -34,6 +34,10 @@ await page.locator('#comment').fill('Shortcut finding #copy');await page.keyboar
 await page.locator('.finding').nth(1).focus();await page.keyboard.press('Delete');await expect(page.locator('.finding')).toHaveCount(1);await page.keyboard.press('Meta+z');await expect(page.locator('.finding')).toHaveCount(2);
 await page.locator('.finding').nth(1).focus();await page.keyboard.press('Backspace');await expect(page.locator('.finding')).toHaveCount(1);
 await page.keyboard.press('?');await expect(page.locator('#shortcutsDialog')).toBeVisible();await page.locator('#shortcutsDialog').screenshot({path:'.context/shortcuts.png'});await page.keyboard.press('Escape');await expect(page.locator('#shortcutsDialog')).toBeHidden();
+// While picking, arrow keys pressed in the panel go to the page instead of scrolling the panel.
+await page.evaluate(()=>{window.relayed=[];window.chrome.tabs.sendMessage=async(id,m)=>{window.relayed.push(m.key);};});
+await page.click('#pick');await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowDown');await page.keyboard.press('Escape');await page.keyboard.press('ArrowUp');
+assert.deepEqual(await page.evaluate(()=>window.relayed),['ArrowUp','ArrowDown','Escape']);
 // Explicit rename flow and reversible session creation.
 await page.setViewportSize({width:390,height:900});
 await page.click('#rename');await page.fill('#sessionName','Checkout review');await page.getByRole('button',{name:'Save name',exact:true}).click();await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
@@ -59,6 +63,9 @@ await target.evaluate(()=>{window.messages=[];window.chrome.runtime.sendMessage=
 await target.addScriptTag({path:'extension/picker.js'});await target.locator('h1').click();await target.waitForFunction(()=>window.messages.length===1);await target.waitForTimeout(100);await target.keyboard.type('Heading is too tight');await target.screenshot({path:'.context/inline-note.png'});await target.keyboard.press('Enter');
 assert.deepEqual(await target.evaluate(()=>window.messages.at(-1)),{type:'save-draft',id:'draft-1',comment:'Heading is too tight',severity:'Medium',next:false});
 await target.addScriptTag({path:'extension/picker.js'});await target.keyboard.press('Escape');assert.equal(await target.evaluate(()=>!!window.__hyperQA),false);
+await target.setContent('<section id="outer"><p id="inner">Text</p></section>');await target.evaluate(()=>{window.msgs=[];window.relay=null;window.chrome={runtime:{onMessage:{addListener:fn=>{window.relay=fn;},removeListener(){}},sendMessage:async m=>{window.msgs.push(m);return {ok:true,id:'d2'};}}};});
+await target.addScriptTag({path:'extension/picker.js'});await target.locator('#inner').hover();await target.evaluate(()=>{relay({type:'picker-key',key:'ArrowUp'});relay({type:'picker-key',key:'Enter'});});await target.waitForFunction(()=>msgs.some(m=>m.type==='selection'));
+assert.equal(await target.evaluate(()=>msgs.find(m=>m.type==='selection').data.selector),'#outer');await target.keyboard.press('Escape');
 // Page-level S / P keys fire only while a panel is open and never while typing.
 await target.setContent('<input id="q"><p>Page</p>');await target.evaluate(()=>{window.sent=[];window.__hyperQAHotkeys=false;window.chrome={storage:{local:{get:async()=>({panelOpen:true})},onChanged:{addListener(){}}},runtime:{sendMessage:async m=>{window.sent.push(m);}}};});
 await target.addScriptTag({path:'extension/hotkeys.js'});await target.locator('p').click();await target.keyboard.press('s');await target.keyboard.press('p');await target.locator('#q').click();await target.keyboard.press('s');
