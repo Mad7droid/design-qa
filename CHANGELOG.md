@@ -2,7 +2,7 @@
 
 All notable changes to Hyper Design QA. Versions match `extension/manifest.json`.
 
-## 1.1.0 — 1 Nov 2026
+## 1.1.0 — 2 Nov 2026 · prepared for the Chrome Web Store
 
 ### Clearer names and controls
 - Product name is now **Hyper Design QA** (no hyphens).

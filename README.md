@@ -6,32 +6,34 @@ Hyper Design QA is a Chrome/Brave extension for design QA. Select any element on
 
 [What's new](CHANGELOG.md) · [Privacy policy](https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/) · [Design notes](DESIGN.md)
 
-<p>
-  <img src="docs/screenshots/findings.png" alt="Side panel with a saved finding" width="300">
-  <img src="docs/screenshots/light-grouped.png" alt="Findings grouped by page, light mode" width="300">
-</p>
+![Hyper Design QA beside a website](docs/screenshots/hero.png)
 
 ## Highlights
 
-- **Rich notes, styled as you type,** with Markdown lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
-- **Precise selection.** A label shows the element name and size; `↑`/`↓` walks to the parent or child.
-- **Select and type.** Click an element and a note box opens beside it with the cursor ready. `↵` saves, `Esc` discards.
-- **Element specs captured for you:** selector, component name (React/Vue when available), size, typography, colour, spacing, and a screenshot with the element outlined.
-- **Save & next** (`⌘↵` in the note box) for marking many issues in a row.
-- **Quick tags** via chips, `⌥1`–`⌥8`, or `#hashtags` in the note.
-- **Copy Markdown** (`⌘⇧C`) to paste a report anywhere.
-- **Links per finding and per session.** Attach Figma frames, tickets, or specs. They're included in the export.
-- **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts. Global shortcuts work from any page.
-- **Findings grouped by page** with thumbnails (click to jump back and re-highlight the element), a priority filter, and **Figma link** buttons.
-- **Works across pages and tabs.** Findings and unfinished notes are saved on your device as you go.
-- **Side panel or floating window**, light and dark themes.
-- **AI-ready export:** `report.md`, `session.json`, and marked PNGs in one ZIP.
+- **Select and type.** Click an element and a note box opens beside it, cursor ready. `↵` saves, `Esc` or `×` discards, `⌥1`–`⌥3` sets priority.
+- **Precise selection.** A label shows the element's name and size; `↑`/`↓` moves to the parent or child.
+- **Readable names.** `Button · “Reply”` instead of `div`, or the React/Vue component name when the site exposes one.
+- **Rich notes, styled as you type:** lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
+- **Specs captured for you:** selector, size, typography, colour, spacing, a marked screenshot, and a close-up.
+- **Links and tags.** Attach Figma or design links per finding or per session; tag with chips, `⌥1`–`⌥8`, or `#hashtags`.
+- **Findings grouped by page** with thumbnails, a priority filter, and **Figma link** / **Design link** buttons.
+- **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts.
+- **Export for people and AI:** a ZIP with `report.md`, `session.json`, and screenshots, named after the site and time; or **Copy Markdown** (`⌘⇧C`).
+- **Works across pages and tabs**, in a side panel or floating window, light or dark. Everything stays on your device.
 
-<img src="docs/screenshots/picker-label.png" alt="Picker with element label" width="420"> <img src="docs/screenshots/note-tip.png" alt="Note box beside the element with priority" width="420">
+<p>
+  <img src="docs/screenshots/picker-label.png" alt="Picker with element label and size" width="420">
+  <img src="docs/screenshots/live-note.png" alt="Note box beside the element with live formatting and priority" width="420">
+</p>
+<p>
+  <img src="docs/screenshots/findings.png" alt="Side panel with findings" width="270">
+  <img src="docs/screenshots/light-grouped.png" alt="Findings grouped by page, light mode" width="270">
+  <img src="docs/screenshots/editor.png" alt="Finding editor with links and tags" width="270">
+</p>
 
 ## Install locally
 
-Works in Google Chrome 116+ and Chromium browsers with side-panel support, such as Brave.
+Works in Google Chrome 116+ and Chromium browsers with side-panel support, such as Brave. A Chrome Web Store version is in review; until then, install it locally:
 
 1. Open `chrome://extensions` (or `brave://extensions`).
 2. Turn on **Developer mode**, then choose **Load unpacked**.
@@ -42,19 +44,16 @@ No build, account, API key, or server is required. After pulling updates, click 
 
 ## Review a website
 
-1. Name your session. Optionally add **Session links** (Figma file, spec, ticket).
-2. Press **S** or click **Select an element**, then click the element on the page. **Esc** cancels. **P** captures the visible page instead.
-3. Type your note in the box that appears beside the element. **↵** saves it, **⇧↵** adds a line, **Esc** discards it. Click away to keep the draft and finish it in the panel.
+1. Start reviewing. The session is named after the site automatically (rename it any time). Optionally add **Session links** (Figma file, spec, ticket).
+2. Press **S** or click **Select an element**, then click the element on the page. **↑/↓** picks the parent or child; **Esc** cancels. **P** captures the visible page instead.
+3. Type your note in the box that appears beside the element. **↵** saves it, **⇧↵** adds a line, **⌥1–3** sets priority, **Esc** or **×** discards it. Click away to keep the draft and finish it in the panel.
 4. In the panel you can add **Links**, rename the element, and set a priority. **⌘↵** / **Ctrl+↵** saves.
 5. Navigate to other pages or tabs and repeat. Use the pop-out icon for a floating window; **Return to side panel** docks it again.
 6. Press **E** or click **Export report**. Unzip it and attach `report.md` and the screenshots to Claude. **Download Markdown only** exports text without images.
 
 Edit or delete findings from their cards. Delete, discard, and new session can all be undone with **⌘Z** / **Ctrl+Z** or the Undo button. **Restore previous review** switches between the current and previous session.
 
-<p>
-  <img src="docs/screenshots/editor.png" alt="Finding editor with links field" width="300">
-  <img src="docs/screenshots/shortcuts.png" alt="Keyboard shortcuts" width="300">
-</p>
+<img src="docs/screenshots/shortcuts.png" alt="Keyboard shortcuts" width="300">
 
 ## Keyboard shortcuts
 
