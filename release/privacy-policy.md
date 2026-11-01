@@ -30,7 +30,7 @@ If you contact the support email, the publisher receives the email address, mess
 
 ## Permissions
 
-Website access and scripting let the extension inspect elements and capture the visible viewport when you use its capture controls, including after navigating to another page. Storage permissions retain your reviews and screenshots locally. The side-panel permission hosts the review interface. Browser-window APIs provide the optional draggable review window. Broad website access is not used for background browsing collection.
+Website access and scripting let the extension inspect elements and capture the visible viewport when you use its capture controls, including after navigating to another page. A small packaged listener lets the S and P keyboard shortcuts work on pages while the review panel is open; it reads no page content and records nothing. Storage permissions retain your reviews and screenshots locally. The side-panel permission hosts the review interface. Browser-window APIs provide the optional draggable review window. Broad website access is not used for background browsing collection.
 
 ## Limited use
 

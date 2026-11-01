@@ -11,7 +11,7 @@ Regions: All available regions
 
 ## Short description
 
-Capture design issues across pages with marked screenshots, element specs, and notes. Export readable reports for humans and AI.
+Point at a design issue, type a note beside it, and export a clean report with screenshots and specs for people and AI.
 
 ## Detailed description
 
@@ -20,13 +20,18 @@ Turn what you see into a design QA report that a teammate or AI assistant can ac
 Hyper Design QA lets you select an element on a website, describe what needs fixing, and collect findings across pages in one review. No developer tools, account, or AI API key is required to use the extension.
 
 CAPTURE THE CONTEXT
-• Select an element and capture a visible-page screenshot with the element outlined.
+• Select an element and type your note right beside it, with the outline still visible. Press Enter to save.
+• Use ↑/↓ to pick the parent or child element; a label shows its name and size.
+• Select an element and capture a visible-page screenshot with the element outlined, plus a close-up.
 • Record the page URL, CSS selector, dimensions, colors, typography, spacing, and other computed visual styles.
-• Use available React/Vue metadata or page attributes for component-name hints. Rename a finding when a friendlier label is useful.
+• Readable element names such as Button · “Reply”, or React/Vue component names when available.
 • Capture the visible page when an issue affects the whole viewport.
 
 KEEP YOUR REVIEW TOGETHER
-• Add plain-language notes and priorities.
+• Add notes with lists, bold, code, and links, styled as you type. Set priority and quick tags.
+• Attach Figma or other design links to each finding or the whole review.
+• Findings are grouped by page with thumbnails and a priority filter.
+• Keyboard-first: S select, P capture page, ⌘/Ctrl+Enter save, ⌘/Ctrl+Z undo, E export.
 • Keep collecting findings as you navigate between pages and tabs.
 • Edit findings, undo a deletion, and restore the previous review.
 • Work in Chrome's side panel or a separate draggable, resizable review window.
@@ -34,7 +39,7 @@ KEEP YOUR REVIEW TOGETHER
 
 EXPORT FOR PEOPLE AND AI
 • Download a ZIP containing a formatted Markdown report, structured JSON, and marked PNG screenshots.
-• Download Markdown on its own when you only need the text.
+• Download Markdown on its own, or copy it to paste straight into Claude, Linear, or Slack.
 • Attach the exported report and screenshots to Claude or share them with your team yourself. The extension does not send them automatically.
 
 LOCAL BY DESIGN

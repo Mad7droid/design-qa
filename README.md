@@ -105,7 +105,7 @@ Captured specs include dimensions, viewport size, scroll position, pixel ratio, 
 
 ## Permissions and data
 
-Website access is needed to activate the picker on sites you navigate to and capture their visible viewport. Scripts only run when you press a capture button. `scripting` reads the selected element, `sidePanel` hosts the review UI, and `storage` / `unlimitedStorage` preserve findings and PNG evidence locally. The extension uses `<all_urls>` for cross-page capture; it does not also request the redundant `activeTab` permission. There are no analytics, external requests, or remote scripts in the extension. One current and one previous review are kept in extension storage. Starting another new session replaces the older saved review.
+Website access is needed to activate the picker on sites you navigate to and capture their visible viewport. Capture scripts only run when you start a capture. A tiny packaged listener (`hotkeys.js`) lets **S** and **P** work from the page while the panel is open; it reads no page content and does nothing when the panel is closed. `scripting` reads the selected element, `sidePanel` hosts the review UI, and `storage` / `unlimitedStorage` preserve findings and PNG evidence locally. The extension uses `<all_urls>` for cross-page capture; it does not also request the redundant `activeTab` permission. There are no analytics, external requests, or remote scripts in the extension. One current and one previous review are kept in extension storage. Starting another new session replaces the older saved review.
 
 ## Development and checks
 

@@ -46,5 +46,13 @@
   "sourceRepositoryOwner": "Mad7droid",
   "sourceVisibility": "public",
   "reviewStillPendingAfterPolicyUrlChange": true,
-  "supportUrlPendingReviewLocked": true
+  "supportUrlPendingReviewLocked": true,
+  "nextRelease": {
+    "name": "Hyper Design QA",
+    "version": "1.1.0",
+    "uploadPackage": ".context/release/hyper-design-qa-1.1.0.zip",
+    "status": "prepared_not_uploaded",
+    "changes": "See CHANGELOG.md",
+    "newDisclosure": "Static content script hotkeys.js for S/P shortcuts while panel is open"
+  }
 }
