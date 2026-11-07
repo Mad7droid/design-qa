@@ -117,6 +117,7 @@ npm install
 npm test
 npm run check
 npm run test:browser
+npm run test:extension   # real unpacked extension in Playwright's Chromium (set CHROMIUM_PATH if needed)
 ```
 
 The browser suite uses an installed Chrome executable on macOS. Set `CHROME_PATH` on other systems. It tests the rendered panel with mocked Chrome APIs and tests the real element picker against a fixture. It covers capture, required comments, saving, links, reload persistence, editing, delete/undo, keyboard shortcuts, the inline note box, ZIP downloads, narrow layouts, selection metadata, and Escape cancellation. The report tests cover Markdown formatting and ZIP structure. Browser permission prompts, side-panel integration, and real `captureVisibleTab` still require a manual loaded-extension smoke test.

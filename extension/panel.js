@@ -189,5 +189,6 @@ $('editor').addEventListener('click',e=>{if(!e.target.closest('button,input,text
 $('comment').addEventListener('keydown',e=>{if(hyperFormat.key($('comment'),e))e.preventDefault();});
 $('comment').dataset.hfMax=260;hyperFormat.live($('comment'));
 renderTags();
-chrome.runtime.connect?.({name:'panel'});
+// Reconnect if the background worker restarts, so page S / P keys keep working.
+(function connect(){const port=chrome.runtime.connect?.({name:'panel'});port?.onDisconnect.addListener(()=>setTimeout(connect,300));})();
 const stored=await chrome.storage.local.get(['session','draft','previousSession','theme']);if(stored.theme)applyTheme(stored.theme);hasPrevious=!!stored.previousSession;session=stored.session||fresh();if(!stored.session)await persist();render();if(stored.draft)await showDraft(stored.draft);

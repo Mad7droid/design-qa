@@ -2,8 +2,8 @@
 (() => {
   if (window.__hyperQAHotkeys) return; window.__hyperQAHotkeys = true;
   let active = false;
-  chrome.storage.local.get('panelOpen').then(d => { active = !!d.panelOpen; }).catch(() => {});
-  chrome.storage.onChanged.addListener((changes, area) => { if (area === 'local' && changes.panelOpen) active = !!changes.panelOpen.newValue; });
+  chrome.storage.session.get('panelOpen').then(d => { active = !!d.panelOpen; }).catch(() => {});
+  chrome.storage.session.onChanged.addListener(changes => { if (changes.panelOpen) active = !!changes.panelOpen.newValue; });
   window.addEventListener('keydown', e => {
     if (!active || e.repeat || e.metaKey || e.ctrlKey || e.altKey || e.isComposing || window.__hyperQA) return;
     const el = e.composedPath()[0];

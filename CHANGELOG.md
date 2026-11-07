@@ -55,6 +55,10 @@ All notable changes to Hyper Spec (formerly Hyper-Design-QA). Versions match `ex
 - Copied Markdown says where to find screenshots instead of linking to images that aren't there.
 
 ### Improvements
+- Faster pages: the page shortcut listener no longer receives the review session (including screenshots) on every change.
+- Page S/P keys keep working if the browser restarts the extension's background worker.
+- Reopening a finding only opens web pages; the note-box outline hides once the page scrolls.
+- New end-to-end test with the real extension (`npm run test:extension`).
 - Element name is auto-detected and now tucked under **Element details**; the editor shows only what you need to write.
 - The on-page note box keeps focus after capture, works on sites with strict security policies, and opens even if the background worker hasn't reloaded yet.
 - Discarding a capture no longer asks for confirmation. It can be undone instead.

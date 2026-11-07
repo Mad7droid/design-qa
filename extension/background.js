@@ -55,9 +55,11 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 chrome.commands.onCommand.addListener((command,tab)=>runCommand(command,tab,true).catch(()=>{}));
 chrome.runtime.onMessage.addListener((message,sender)=>{if(message.type==='hotkey'&&sender.tab)runCommand(message.command,sender.tab,false).catch(()=>{});});
 // Page S / P keys only listen while a panel is connected.
+// The flag lives in session storage so page scripts never receive the (large) review session in change events.
 let panels=0;
-chrome.storage.local.set({panelOpen:false});
-chrome.runtime.onConnect.addListener(port=>{if(port.name!=='panel')return;panels++;chrome.storage.local.set({panelOpen:true});port.onDisconnect.addListener(()=>{panels=Math.max(0,panels-1);if(!panels)chrome.storage.local.set({panelOpen:false});});});
+chrome.storage.session.setAccessLevel({accessLevel:'TRUSTED_AND_UNTRUSTED_CONTEXTS'}).catch(()=>{});
+chrome.storage.session.set({panelOpen:false});
+chrome.runtime.onConnect.addListener(port=>{if(port.name!=='panel')return;panels++;chrome.storage.session.set({panelOpen:true});port.onDisconnect.addListener(()=>{panels=Math.max(0,panels-1);if(!panels)chrome.storage.session.set({panelOpen:false});});});
 async function runCommand(command,tab,openPanel){
   if(!tab?.id||!/^https?:|^file:/.test(tab.url||''))return;
   // Open synchronously: the shortcut's user gesture expires after the first await.
@@ -74,6 +76,7 @@ async function runCommand(command,tab,openPanel){
 // Reopen a finding: reuse a tab already on that URL, otherwise open one, then flash the element.
 chrome.runtime.onMessage.addListener((message,sender,respond)=>{
   if(message.type!=='reveal')return;
+  if(!/^(https?|file):/.test(message.url||'')){respond({error:'Only web pages can be reopened.'});return;}
   (async()=>{
     const {reviewWindowId}=await chrome.storage.session.get('reviewWindowId');
     const win=reviewWindowId?await chrome.windows.get(reviewWindowId).catch(()=>null):null;

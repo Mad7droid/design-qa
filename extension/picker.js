@@ -111,7 +111,7 @@
     document.documentElement.append(host);
     let timer, severity = 'Medium';
     const update = async patch => { try { const {draft} = await chrome.storage.local.get('draft'); if (draft?.id === id) await chrome.storage.local.set({draft: {...draft, ...patch}}); } catch {} };
-    const sync = () => { clearTimeout(timer); timer = setTimeout(() => update({comment: field.value}), 150); };
+    const sync = () => { clearTimeout(timer); timer = setTimeout(() => update({comment: field.value}), 300); };
     const setPriority = p => { severity = p; for (const b of root.querySelectorAll('.prio button')) b.setAttribute('aria-checked', String(b.dataset.p === p)); update({severity: p}); };
     for (const b of root.querySelectorAll('.prio button')) b.addEventListener('click', () => { setPriority(b.dataset.p); field.focus(); });
     const close = () => { clearTimeout(timer); host.remove(); window.removeEventListener('pointerdown', outside, true); delete window.__hyperQAToast; };
@@ -137,6 +137,9 @@
     // Keep page shortcuts from reacting while the reviewer types.
     for (const type of ['keyup','keypress']) field.addEventListener(type, e => e.stopPropagation());
     window.addEventListener('pointerdown', outside, true);
+    // The outline is fixed-position, so hide it once the page scrolls away from the capture.
+    const hideMark = () => { mark.style.display = 'none'; };
+    window.addEventListener('scroll', hideMark, {capture: true, passive: true, once: true});
     window.__hyperQAToast = close;
     // Pull focus back if the panel grabs it in the first moments after capture.
     let touched = false;
