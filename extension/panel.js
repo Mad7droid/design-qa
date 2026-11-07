@@ -120,11 +120,17 @@ $('rename').onclick=()=>{ $('sessionName').value=session.name;$('sessionDisplay'
 $('cancelRename').onclick=closeRename;
 $('sessionName').onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();closeRename();}};
 $('renameForm').onsubmit=e=>{e.preventDefault();run(async()=>{const name=$('sessionName').value.trim();if(!name){$('nameError').hidden=false;$('sessionName').setAttribute('aria-invalid','true');$('sessionName').focus();return;}const updated={...session,name};await chrome.storage.local.set({session:updated});session=updated;closeRename();render();status('Session renamed.');});};
-$('reset').onclick=()=>{const count=session.findings.length;$('newSessionDescription').textContent=count?`This review contains ${count} ${count===1?'finding':'findings'}${draft?' and an unfinished note':''}. Export it before starting a new review.`:draft?'You have an unfinished note in this review. It will be kept with the previous session.':'You’ll start with an empty review and a new name.';$('exportAndNew').hidden=!count;$('startNew').textContent=count?'Start without exporting':'Start new session';$('newSessionDialog').showModal();};
-$('cancelNew').onclick=()=>$('newSessionDialog').close();
-async function startNewSession(){await draftQueue;const previousSession={session,draft};const next=fresh();await chrome.storage.local.set({previousSession,session:next});session=next;hasPrevious=true;undoStack.length=0;undoStack.push(restorePreviousReview);$('undo').hidden=false;await clearDraft();$('newSessionDialog').close();$('renameForm').hidden=true;$('sessionDisplay').hidden=false;render();status('New session started. Restore the previous review with Undo.');$('rename').click();}
-$('startNew').onclick=()=>run(startNewSession);
-$('exportAndNew').onclick=()=>run(async()=>{await exportReport();await startNewSession();});
+$('reset').onclick=()=>run(startNewSession);
+async function startNewSession(){
+ await draftQueue;
+ // An empty session is already ready to use. Do not overwrite the recovery copy.
+ if(!draft&&!session.findings.length&&session.name===UNTITLED&&!session.links?.length){$('pick').focus();return;}
+ const previousSession={session,draft},next=fresh();
+ await chrome.storage.local.set({previousSession,session:next});session=next;hasPrevious=true;
+ undoStack.length=0;undoStack.push(restorePreviousReview);$('undo').hidden=false;
+ await clearDraft();$('renameForm').hidden=true;$('sessionDisplay').hidden=false;render();
+ status('New session started. Previous review kept.');$('pick').focus();
+}
 // File name from the session (or site) plus local date and time, e.g. gmail-review-2026-11-01-0412-qa.zip.
 function exportName(ext){
   const base=session.name===UNTITLED&&session.findings[0]?shortSite(session.findings[0]):session.name.replace(/\s*·\s*[A-Z][a-z]{2} \d{1,2}$|\s*·\s*\d{1,2} [A-Z][a-z]{2}$/,'');

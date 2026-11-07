@@ -89,6 +89,8 @@
     if (!id) return;
     const mac = /Mac/.test(navigator.platform), alt = mac ? '⌥' : 'Alt+';
     const host = document.createElement('div');
+    // Closed shadow roots hide the textarea from page-level shortcut listeners.
+    host.setAttribute('data-hyperqa-note', '');
     host.style.cssText = 'position:fixed;z-index:2147483647;inset:auto';
     const root = host.attachShadow({mode:'closed'});
     root.innerHTML = '<div class="mark"></div><div class="box" role="dialog" aria-label="Hyper Design QA note"><button class="close" aria-label="Discard capture" title="Discard (Esc)">×</button><textarea aria-label="What needs fixing?" placeholder="What needs fixing?"></textarea><p class="tip" hidden>Add how it should look? ↵ again to save.</p><div class="row"><div class="prio" role="radiogroup" aria-label="Priority"><button data-p="High" title="'+alt+'1">High</button><button data-p="Medium" aria-checked="true" title="'+alt+'2">Medium</button><button data-p="Low" title="'+alt+'3">Low</button></div><span class="save"><kbd>↵</kbd> Save</span></div></div>';

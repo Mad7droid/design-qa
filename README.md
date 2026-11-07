@@ -53,6 +53,8 @@ No build, account, API key, or server is required. After pulling updates, click 
 
 Edit or delete findings from their cards. Delete, discard, and new session can all be undone with **⌘Z** / **Ctrl+Z** or the Undo button. **Restore previous review** switches between the current and previous session.
 
+**New session** starts immediately, keeping your current review and unfinished note for recovery. Naming is optional; the first finding supplies a default name. Clicking New session again while the review is still empty keeps the recovery copy intact. Only one previous review is retained.
+
 <img src="docs/screenshots/shortcuts.png" alt="Keyboard shortcuts" width="300">
 
 ## Keyboard shortcuts

@@ -43,8 +43,9 @@ assert.deepEqual(await page.evaluate(()=>window.relayed),['ArrowUp','ArrowDown',
 await page.setViewportSize({width:390,height:900});
 await page.click('#rename');await page.fill('#sessionName','Checkout review');await page.getByRole('button',{name:'Save name',exact:true}).click();await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
 await page.click('#rename');await page.fill('#sessionName','Do not save');await page.press('#sessionName','Escape');await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
-await page.click('#reset');await expect(page.locator('#newSessionDialog')).toBeVisible();await expect(page.locator('#newSessionDescription')).toContainText('1 finding');await page.click('#cancelNew');await expect(page.locator('.finding')).toHaveCount(1);
-await page.click('#reset');await page.click('#startNew');await expect(page.locator('.finding')).toHaveCount(0);await expect(page.locator('#renameForm')).toBeVisible();await page.click('#cancelRename');await page.click('#restorePrevious');await expect(page.locator('.finding')).toHaveCount(1);await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
+await page.click('#reset');await expect(page.locator('.finding')).toHaveCount(0);await expect(page.locator('dialog[open]')).toHaveCount(0);await expect(page.locator('#renameForm')).toBeHidden();await expect(page.locator('#pick')).toBeFocused();
+await page.click('#reset');await page.click('#undo');await expect(page.locator('.finding')).toHaveCount(1);await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
+await page.click('#reset');await page.reload();await page.click('#restorePrevious');await expect(page.locator('.finding')).toHaveCount(1);await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
 await page.reload();await expect(page.locator('#restorePrevious')).toBeVisible();await expect(page.locator('#sessionTitle')).toHaveText('Checkout review');
 assert.equal(await page.locator('.mark').evaluate(img=>img.complete&&img.naturalWidth>0),true);
 await page.screenshot({path:'.context/session-improved.png',fullPage:true});await page.screenshot({path:'.context/session-controls.png',clip:{x:0,y:0,width:390,height:270}});
@@ -54,6 +55,10 @@ await page.goto('https://hyper.local/panel.html?floating=1');await expect(page.g
 await page.evaluate(s=>window.testScreenshot='data:image/png;base64,'+s,screenshot);await page.click('#page');await expect(page.locator('#editor')).toBeVisible();assert.deepEqual(await page.evaluate(()=>window.lastTabQuery),{active:true,windowId:1});assert.deepEqual(await page.evaluate(()=>window.windowCalls.map(x=>x.id)),[1,9]);
 await page.fill('#comment','Draft preserved across windows');await page.click('#popout');await page.waitForFunction(()=>window.windowClosed);assert.equal(await page.evaluate(()=>window.openedPanel.windowId),1);
 await page.goto('https://hyper.local/panel.html');await expect(page.locator('#comment')).toHaveValue('Draft preserved across windows');
+// A new session also retains the latest unfinished note, including after a reload.
+await page.evaluate(()=>document.getElementById('reset').click());await expect(page.locator('#editor')).toBeHidden();
+await page.reload();await page.click('#restorePrevious');await expect(page.locator('#comment')).toHaveValue('Draft preserved across windows');
+await expect(page.locator('.finding')).toHaveCount(1);
 // Exercise the actual page picker against nested elements, not the panel mock.
 const target=await browser.newPage({viewport:{width:1000,height:700}});
 await target.route('https://hyper.local/fixture',route=>route.fulfill({body:'<!doctype html><html><body></body></html>',contentType:'text/html'}));await target.goto('https://hyper.local/fixture');await target.setContent('<main><h1>Store</h1><button id="purchase" data-component="PurchaseButton" style="padding:16px">Buy now</button></main>');
@@ -71,5 +76,23 @@ assert.equal(await target.evaluate(()=>msgs.find(m=>m.type==='selection').data.s
 await target.setContent('<input id="q"><p>Page</p>');await target.evaluate(()=>{window.sent=[];window.__hyperQAHotkeys=false;window.chrome={storage:{local:{get:async()=>({panelOpen:true})},onChanged:{addListener(){}}},runtime:{sendMessage:async m=>{window.sent.push(m);}}};});
 await target.addScriptTag({path:'extension/hotkeys.js'});await target.locator('p').click();await target.keyboard.press('s');await target.keyboard.press('p');await target.locator('#q').click();await target.keyboard.press('s');
 assert.deepEqual(await target.evaluate(()=>window.sent.map(m=>m.command)),['select-element','capture-page']);
+// Closed-shadow note fields must keep typing focus even with page hotkeys loaded.
+await target.evaluate(()=>{window.sent=[];window.chrome.runtime.sendMessage=async m=>{window.sent.push(m);return m.type==='selection'?{id:'typing-draft'}:{ok:true};};});
+await target.addScriptTag({path:'extension/picker.js'});await target.locator('p').click();
+await target.waitForFunction(()=>document.activeElement?.hasAttribute('data-hyperqa-note'));
+const noteText='this spacing needs 24px! #copy?';
+await target.keyboard.type(noteText);await target.keyboard.press('Backspace');await target.keyboard.type('?');
+await target.keyboard.press('Shift+Enter');await target.keyboard.type('second line');
+assert.equal(await target.evaluate(()=>document.activeElement?.hasAttribute('data-hyperqa-note')),true);
+assert.equal(await target.evaluate(()=>window.sent.some(m=>m.type==='hotkey')),false);
+await target.keyboard.press('Control+Enter');
+assert.deepEqual(await target.evaluate(()=>window.sent.at(-1)),{type:'save-draft',id:'typing-draft',comment:noteText+'\nsecond line',severity:'Medium',next:true});
+await target.addScriptTag({path:'extension/picker.js'});await target.locator('p').click();
+await target.waitForFunction(()=>document.activeElement?.hasAttribute('data-hyperqa-note'));
+await target.keyboard.type('this stays focused');await target.keyboard.press('Escape');
+assert.equal(await target.evaluate(()=>window.sent.at(-1).type),'discard-draft');
+assert.equal(await target.locator('[data-hyperqa-note]').count(),0);
+await target.locator('p').click();await target.keyboard.press('s');
+assert.equal(await target.evaluate(()=>window.sent.at(-1).command),'select-element');
 assert.deepEqual(errors,[]);console.log('Browser checks passed: capture, required note, save, reload, edit, delete/undo, keyboard shortcuts, ZIP download, narrow layout, element picker, Escape, page S/P keys.');
 } finally {await browser.close();}
