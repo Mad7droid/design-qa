@@ -16,3 +16,7 @@ No login, payment, credentials, backend, or AI service is required to use the ex
 Screenshots are visible-viewport captures. Component names are best effort. Browser-protected pages and iframe/canvas internals are outside scope. The extension does not automatically send data to Claude or other services.
 
 Permissions are explained in privacy-disclosures.md. There is one static content script, hotkeys.js, which only listens for the S and P shortcut keys while the review panel is open and reads no page content. There are no analytics, remote code, or extension-origin network requests. One current and one previous review are stored locally; uninstalling the extension removes its stored review data. User-downloaded exports remain in the user's Downloads folder.
+
+## Dashboard summary (486 characters)
+
+No login or API key needed. Open Hyper Spec on https://example.com. Press S, click an element, and type in the focused note box. Enter saves; Alt+1 sets High. P captures the viewport. Edit/delete/undo findings; try light/dark and pop-out. Export ZIP (Markdown, JSON, marked PNGs) or Copy Markdown. Data stays local; no remote code or AI requests. Packaged hotkeys.js listens for S/P outside text fields while the panel is open; it reads no page content. Protected pages are unsupported.

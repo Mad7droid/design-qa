@@ -74,3 +74,9 @@ First public release, submitted to the Chrome Web Store.
 - Autosaved drafts, edit, delete with undo, rename, new session with restore.
 - Export as ZIP (`report.md`, `session.json`, screenshots) or Markdown only.
 - Linear-inspired dark and light themes, side panel or floating window.
+
+### Store release preparation — November 7, 2026
+
+- Five listing screenshots featuring dark subpages of madhavnair.in, including a branded light/dark extension showcase, with creator attribution.
+- Updated privacy policy hosted on GitHub Pages at https://mad7droid.github.io/hyper-spec/privacy/.
+- GitHub repository and store support links use Mad7droid/hyper-spec.

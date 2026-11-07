@@ -5,11 +5,11 @@ Package: `.context/release/hyper-spec-1.1.0.zip` (checksum in `.context/release/
 1. Open the item in the [developer dashboard](https://chrome.google.com/u/1/webstore/devconsole/2af2ea56-4eb8-4d4c-aace-ca898c2e9d47/oolffllmbjflkicfkfiagiabmjbojilp/edit).
 2. If 1.0.0 is still **Pending review**, either wait for approval, or choose **Cancel review** to replace it. Cancelling restarts the review queue.
 3. **Package → Upload new package** and choose the 1.1.0 ZIP.
-4. **Store listing:** paste the updated short and detailed descriptions from `store-listing.md` and replace the three screenshots in `.context/release/assets/`. The title becomes **Hyper Spec** (from the manifest).
+4. **Store listing:** paste the updated short and detailed descriptions from `store-listing.md` and replace the five screenshots in `.context/release/assets/`. The title becomes **Hyper Spec** (from the manifest).
 5. **Privacy practices:** update the `<all_urls>` justification from `privacy-disclosures.md`. 1.1.0 adds one packaged content script (`hotkeys.js`) for the S/P shortcuts. Paste the new reviewer notes from `reviewer-instructions.md`.
 6. Submit for review.
 
-> Submitted on November 1, 2026. Google confirmed **Pending Review**. Automatic publication after approval is enabled. Item ID: `oolffllmbjflkicfkfiagiabmjbojilp`. See `release-status.json` for the saved status.
+> Hyper Spec 1.1.0 submitted on November 7, 2026. Google confirmed **Your extension was submitted for review**. Automatic publication after approval is enabled. Item ID: `oolffllmbjflkicfkfiagiabmjbojilp`. See `release-status.json` for the saved status.
 
 # Publish Hyper Spec
 
@@ -19,18 +19,18 @@ Public privacy policy: https://mad7droid.github.io/hyper-spec/privacy/
 
 ## Files to use
 
-- Upload package: `.context/release/hyper-design-qa-1.0.0.zip`
+- Upload package: `.context/release/hyper-spec-1.1.0.zip`
 - Listing text: `release/store-listing.md`
 - Privacy explanations: `release/privacy-disclosures.md`
 - Reviewer notes: `release/reviewer-instructions.md`
 - Store icon: `.context/release/assets/store-icon-128.png`
-- Store screenshots: `.context/release/assets/01-review-dark.png`, `02-capture-notes.png`, `03-review-light.png` (all 1280×800)
+- Store screenshots: `docs/store/01-select-and-note.png` through `05-brand-light-dark.png` (all 1280×800)
 - Optional small promo: `.context/release/assets/promo-440x280.png`
 - Release state and package checksum: `release/release-status.json`
 
 ## Dashboard steps
 
-1. Open https://chrome.google.com/webstore/devconsole and use the Google account that should own the extension. The current browser is at Google's account verification step for mad7droid@gmail.com; finish verification yourself.
+1. Open https://chrome.google.com/webstore/devconsole and use the Google account that should own the extension. Use the publisher account mad7droid@gmail.com.
 2. If this account is not registered, complete developer registration, the required agreement, and Google's registration fee. Those are account-owner actions. Verify any required publisher/contact information.
 3. Add a new item and upload the ZIP. Its root contains manifest.json, not an enclosing directory.
 4. Fill Store listing using the supplied copy. Upload the icon, screenshots, and optional promo. Set public support contact to mad7droid@gmail.com.
