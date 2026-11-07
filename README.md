@@ -4,7 +4,7 @@
 
 Hyper Spec is a Chrome/Brave extension for designers, product managers, and front-end developers. Select any element on a live page, type what should change right beside it, and export a precise spec (selector, styles, marked screenshot, your notes) that Claude Code, Codex, or a teammate can act on. It's faster and more accurate than describing UI in words or sending bare screenshots.
 
-[What's new](CHANGELOG.md) · [Privacy policy](https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/) · [Design notes](DESIGN.md)
+[What's new](CHANGELOG.md) · [Privacy policy](https://mad7droid.github.io/hyper-spec/privacy/) · [Design notes](DESIGN.md)
 
 ![Hyper Spec beside a website](docs/screenshots/hero.png)
 

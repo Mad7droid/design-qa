@@ -40,6 +40,8 @@ Everything stays in browser storage on your device. No account, analytics, ads, 
 WHAT TO EXPECT
 Screenshots capture the visible viewport, not a stitched full page. Component names are best-effort. Browser-protected pages, cross-origin iframes, closed shadow roots, and canvas internals can't be inspected.
 
+Made by Madhav Nair — madhavnair.in. Screenshots show the extension on madhavnair.in.
+
 Hyper Spec is an independent tool and is not affiliated with Anthropic, OpenAI, Linear, Figma, or Google.
 
 Support: mad7droid@gmail.com

@@ -15,7 +15,7 @@ Package: `.context/release/hyper-spec-1.1.0.zip` (checksum in `.context/release/
 
 Publisher: Madhav Nair
 Support email: mad7droid@gmail.com
-Public privacy policy: https://hyper-design-qa-privacy.mad7droid.chatgpt.site/privacy/
+Public privacy policy: https://mad7droid.github.io/hyper-spec/privacy/
 
 ## Files to use
 

@@ -1,6 +1,6 @@
 # Hyper Spec privacy policy
 
-Effective date: October 31, 2026
+Effective date: November 7, 2026
 
 Hyper Spec is published by Madhav Nair. Contact: mad7droid@gmail.com.
 
@@ -34,7 +34,7 @@ Website access and scripting let the extension inspect elements and capture the 
 
 ## Limited use
 
-The use of information received from Google APIs adheres to the Chrome Web Store User Data Policy, including its Limited Use requirements. User data is used only for the disclosed design QA functionality and is not used for advertising, creditworthiness, lending eligibility, or unrelated profiling.
+The use of information received from Google APIs adheres to the Chrome Web Store User Data Policy, including its Limited Use requirements. User data is used only for the disclosed capture and annotation functionality and is not used for advertising, creditworthiness, lending eligibility, or unrelated profiling.
 
 ## Changes and contact
 
