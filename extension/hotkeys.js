@@ -1,4 +1,4 @@
-// Page-level S / P shortcuts. Active only while a Hyper Design QA panel is open, so sites keep their own keys otherwise.
+// Page-level S / P shortcuts. Active only while a Hyper Spec panel is open, so sites keep their own keys otherwise.
 (() => {
   if (window.__hyperQAHotkeys) return; window.__hyperQAHotkeys = true;
   let active = false;

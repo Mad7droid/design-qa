@@ -5,7 +5,7 @@ Support: mad7droid@gmail.com
 
 ## Single purpose
 
-Let users collect and annotate design QA findings from the webpages they choose, with element identifiers, visual specifications, and screenshots, then export those findings as a locally downloaded report.
+Let users select elements on the webpages they choose and annotate them into a spec for AI coding tools or teammates, with element identifiers, visual specifications, and screenshots, then export those findings as a locally downloaded report.
 
 ## Permission justifications
 

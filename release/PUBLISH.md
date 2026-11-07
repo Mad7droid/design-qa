@@ -1,17 +1,17 @@
 ## Update to 1.1.0
 
-Package: `.context/release/hyper-design-qa-1.1.0.zip` (checksum in `.context/release/hyper-design-qa-1.1.0.zip.sha256`). Rebuild with `npm run package`.
+Package: `.context/release/hyper-spec-1.1.0.zip` (checksum in `.context/release/hyper-spec-1.1.0.zip.sha256`). Rebuild with `npm run package`.
 
 1. Open the item in the [developer dashboard](https://chrome.google.com/u/1/webstore/devconsole/2af2ea56-4eb8-4d4c-aace-ca898c2e9d47/oolffllmbjflkicfkfiagiabmjbojilp/edit).
 2. If 1.0.0 is still **Pending review**, either wait for approval, or choose **Cancel review** to replace it. Cancelling restarts the review queue.
 3. **Package → Upload new package** and choose the 1.1.0 ZIP.
-4. **Store listing:** paste the updated short and detailed descriptions from `store-listing.md` and replace the three screenshots in `.context/release/assets/`. The title becomes **Hyper Design QA** (from the manifest).
+4. **Store listing:** paste the updated short and detailed descriptions from `store-listing.md` and replace the three screenshots in `.context/release/assets/`. The title becomes **Hyper Spec** (from the manifest).
 5. **Privacy practices:** update the `<all_urls>` justification from `privacy-disclosures.md`. 1.1.0 adds one packaged content script (`hotkeys.js`) for the S/P shortcuts. Paste the new reviewer notes from `reviewer-instructions.md`.
 6. Submit for review.
 
 > Submitted on November 1, 2026. Google confirmed **Pending Review**. Automatic publication after approval is enabled. Item ID: `oolffllmbjflkicfkfiagiabmjbojilp`. See `release-status.json` for the saved status.
 
-# Publish Hyper Design QA
+# Publish Hyper Spec
 
 Publisher: Madhav Nair
 Support email: mad7droid@gmail.com
@@ -39,7 +39,7 @@ Public privacy policy: https://hyper-design-qa-privacy.mad7droid.chatgpt.site/pr
 7. Resolve the dashboard's validation warnings. Review the final listing and privacy declarations before submitting for review. Google review is required; uploading a ZIP does not make the extension public.
 8. Record the created item ID, listing URL, and submission status in release-status.json. Use automatic publication after approval if the publisher wants it available as soon as Google approves it.
 
-The project source is published at https://github.com/Mad7droid/design-qa using the Mad7droid account. The original maddymanifest repository remains unchanged. The public gist contains only the privacy policy and the support details provided for publication.
+The project source is published at https://github.com/Mad7droid/hyper-spec using the Mad7droid account. The original maddymanifest repository remains unchanged. The public gist contains only the privacy policy and the support details provided for publication.
 
 ## Rebuild
 

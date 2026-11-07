@@ -1,18 +1,18 @@
-# Hyper Design QA privacy policy
+# Hyper Spec privacy policy
 
 Effective date: October 31, 2026
 
-Hyper Design QA is published by Madhav Nair. Contact: mad7droid@gmail.com.
+Hyper Spec is published by Madhav Nair. Contact: mad7droid@gmail.com.
 
 ## What the extension does
 
-Hyper Design QA lets you select elements on a website, capture visual evidence, add review notes, and export a design QA report. It does not automatically send information to Claude, another AI service, or the publisher.
+Hyper Spec lets you select elements on a website, capture visual evidence, add review notes, and export a spec report. It does not automatically send information to Claude, another AI service, or the publisher.
 
 ## Information handled on your device
 
 When you explicitly select an element or capture a page, the extension processes the page URL and title, selected element text and identifiers, accessible labels, component hints, computed visual styles, dimensions, viewport details, and a screenshot of the visible page. Screenshots and selected page content may contain personal or sensitive information visible on that page. The extension also stores the session name, findings, comments, priorities, timestamps, unfinished notes, and appearance preference that you provide or choose.
 
-The extension uses this information only to provide its design QA capture, annotation, recovery, and export features. It does not continuously record your browsing history, inspect pages in the background, collect passwords from form fields, or record keystrokes across websites. Information visible in a screenshot or selected page content can nevertheless include sensitive information, so choose what you capture carefully.
+The extension uses this information only to provide its element capture, annotation, recovery, and export features. It does not continuously record your browsing history, inspect pages in the background, collect passwords from form fields, or record keystrokes across websites. Information visible in a screenshot or selected page content can nevertheless include sensitive information, so choose what you capture carefully.
 
 ## Storage and retention
 

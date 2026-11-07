@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Hyper Design QA",
+  "name": "Hyper Spec",
   "version": "1.1.0",
-  "description": "Capture design issues across pages with marked screenshots, element specs, and notes. Export readable reports for humans and AI.",
+  "description": "Select elements on any live page, note what to change, and export a precise spec for Claude Code, Codex, or your team.",
   "minimum_chrome_version": "116",
   "permissions": [
     "scripting",
@@ -17,7 +17,7 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Open Hyper Design QA",
+    "default_title": "Open Hyper Spec",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png"
@@ -36,7 +36,7 @@
     {"matches": ["<all_urls>"], "js": ["hotkeys.js"], "run_at": "document_idle"}
   ],
   "commands": {
-    "_execute_action": {"suggested_key": {"default": "Alt+Shift+Q"}, "description": "Open Hyper Design QA"},
+    "_execute_action": {"suggested_key": {"default": "Alt+Shift+Q"}, "description": "Open Hyper Spec"},
     "select-element": {"suggested_key": {"default": "Alt+Shift+S"}, "description": "Select an element on the page"},
     "capture-page": {"suggested_key": {"default": "Alt+Shift+P"}, "description": "Capture the visible page"}
   },

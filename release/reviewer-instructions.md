@@ -2,7 +2,7 @@
 
 No login, payment, credentials, backend, or AI service is required to use the extension.
 
-1. Open a regular HTTPS website, such as https://example.com. Open Hyper Design QA from its toolbar action.
+1. Open a regular HTTPS website, such as https://example.com. Open Hyper Spec from its toolbar action.
 2. Click Select an element, then click a visible element on the webpage. Hover selection outlines the target; Escape cancels. A screenshot and technical details are captured only after selecting.
 3. Add a note under What needs fixing?, optionally rename the element and choose a priority, then Save finding.
 4. Navigate to another regular website and repeat. Both findings remain in the same local session.

@@ -1,4 +1,4 @@
-# Hyper Design QA privacy site
+# Hyper Spec privacy site
 
 Buildless public privacy-policy page. Serve `dist/` with any static host. The root and `/privacy/` routes contain the same policy, with a contact anchor at `#changes-and-contact`.
 

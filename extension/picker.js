@@ -7,7 +7,7 @@
   const label = document.createElement('div');
   label.style.cssText = 'position:fixed;pointer-events:none;z-index:2147483647;display:none;background:#e34b30;color:#fff;font:600 11px/1 system-ui;padding:4px 6px;border-radius:4px;white-space:nowrap;max-width:60vw;overflow:hidden;text-overflow:ellipsis';
   const hint = document.createElement('div');
-  hint.textContent = 'Hyper Design QA · Click to select · ↑ parent · ↓ child · Esc cancel';
+  hint.textContent = 'Hyper Spec · Click to select · ↑ parent · ↓ child · Esc cancel';
   hint.style.cssText = 'position:fixed;pointer-events:none;z-index:2147483647;top:12px;left:50%;transform:translateX(-50%);background:#19191c;color:#ededf0;padding:10px 16px;border-radius:8px;font:13px system-ui;box-shadow:0 4px 24px #0004';
   document.documentElement.append(overlay, label, hint);
   const nameOf = el => el.getAttribute('data-component') || el.getAttribute('data-testid') || el.getAttribute('aria-label') || (el.localName + (typeof el.className === 'string' && el.className.trim() ? '.' + el.className.trim().split(/\s+/)[0] : ''));
@@ -79,7 +79,7 @@
     cancel();
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
     const result=await chrome.runtime.sendMessage({type:'selection',data});
-    if(result?.error) alert('Hyper Design QA: '+result.error);
+    if(result?.error) alert('Hyper Spec: '+result.error);
     else note(result?.id, el.getBoundingClientRect());
   }
   // Inline note box beside the selection, so typing can start the moment the capture lands.
@@ -93,7 +93,7 @@
     host.setAttribute('data-hyperqa-note', '');
     host.style.cssText = 'position:fixed;z-index:2147483647;inset:auto';
     const root = host.attachShadow({mode:'closed'});
-    root.innerHTML = '<div class="mark"></div><div class="box" role="dialog" aria-label="Hyper Design QA note"><button class="close" aria-label="Discard capture" title="Discard (Esc)">×</button><textarea aria-label="What needs fixing?" placeholder="What needs fixing?"></textarea><p class="tip" hidden>Add how it should look? ↵ again to save.</p><div class="row"><div class="prio" role="radiogroup" aria-label="Priority"><button data-p="High" title="'+alt+'1">High</button><button data-p="Medium" aria-checked="true" title="'+alt+'2">Medium</button><button data-p="Low" title="'+alt+'3">Low</button></div><span class="save"><kbd>↵</kbd> Save</span></div></div>';
+    root.innerHTML = '<div class="mark"></div><div class="box" role="dialog" aria-label="Hyper Spec note"><button class="close" aria-label="Discard capture" title="Discard (Esc)">×</button><textarea aria-label="What needs fixing?" placeholder="What needs fixing?"></textarea><p class="tip" hidden>Add how it should look? ↵ again to save.</p><div class="row"><div class="prio" role="radiogroup" aria-label="Priority"><button data-p="High" title="'+alt+'1">High</button><button data-p="Medium" aria-checked="true" title="'+alt+'2">Medium</button><button data-p="Low" title="'+alt+'3">Low</button></div><span class="save"><kbd>↵</kbd> Save</span></div></div>';
     const sheet = new CSSStyleSheet(); sheet.replaceSync(':host{all:initial}.mark{position:fixed;pointer-events:none;border:2px solid #e34b30;box-sizing:border-box;border-radius:2px}.box{--hf-text:#ededf0;--hf-bg:#101012;--hf-placeholder:#8a8a93;position:fixed;width:320px;background:#19191c;color:#ededf0;border:1px solid #36363e;border-radius:10px;box-shadow:0 16px 48px #0007;font:13px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:10px}textarea,.hf-back{box-sizing:border-box;}textarea{box-sizing:border-box;width:100%;min-height:64px;resize:vertical;background:#101012;color:inherit;border:1px solid #36363e;border-radius:6px;padding:8px 9px;font:inherit;outline:none}textarea:focus{border-color:#d8d4c9}.foot{display:flex;justify-content:space-between;gap:8px;margin-top:8px;color:#a0a0ab;font-size:10px}kbd{font:inherit;border:1px solid #36363e;border-radius:4px;padding:0 4px;margin-right:3px}.title{font-size:11px;color:#a0a0ab;margin:0 0 6px}.tip{font-size:11px;color:#e5c07b;margin:6px 0 0}.row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.save{font-size:11px;color:#a0a0ab}.close{position:absolute;top:-10px;right:-10px;width:24px;height:24px;border-radius:50%;border:1px solid #36363e;background:#19191c;color:#a0a0ab;font:16px/1 system-ui;cursor:pointer;display:grid;place-items:center;padding:0;box-shadow:0 4px 12px #0006}.close:hover{color:#ededf0;background:#26262b}.close:focus-visible{outline:2px solid #d8d4c9;outline-offset:2px}.prio{display:flex;gap:6px}.prio button{font:500 11px/1.4 inherit;font-family:inherit;color:#a0a0ab;background:none;border:1px solid #36363e;border-radius:12px;padding:3px 8px;cursor:pointer}.prio button kbd{border:0;padding:0;margin:0 0 0 2px;opacity:.7}.prio button[aria-checked="true"]{background:#e5e2da;color:#24231f;border-color:#e5e2da}'); root.adoptedStyleSheets = [sheet];
     const box = root.querySelector('.box'), field = root.querySelector('textarea'), tip = root.querySelector('.tip'), mark = root.querySelector('.mark');
     const r = rect || {x: innerWidth/2 - 160, y: 60, width: 0, height: 0, right: innerWidth/2 + 160, bottom: 60};
