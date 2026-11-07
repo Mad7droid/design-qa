@@ -12,7 +12,9 @@
   </p>
 </div>
 
-![Select an element and annotate it on a live website](docs/store/01-select-and-note.png)
+![Hyper Spec selecting a download button on madhavnair.in, with an inline accessibility note and the dark review panel](docs/store/01-select-and-note.png)
+
+*From a live page to a concrete change: select the download button, describe its contrast and size issues beside it, and keep the finding in your review.*
 
 Hyper Spec is a Chrome and Brave extension for **designers, product managers, and front-end developers**. Mark the exact UI you want changed and hand Claude Code, Codex, or a teammate a report with your notes, selectors, computed styles, and marked screenshots.
 
@@ -38,12 +40,29 @@ After pulling changes, reload the extension on the extensions page and refresh e
 
 ## How it works
 
-1. **Select.** Press **S** or choose **Select an element**. Hover to see the element's name and size; use **↑ / ↓** to move to its parent or child, then click or press **Enter**. Use **P** for a viewport capture.
-2. **Annotate.** Start typing in the note box beside the selected element. Add formatting, `#tags`, priority, and reference links. **Enter** saves; **Shift+Enter** adds a line. **⌘/Ctrl+Enter** saves and selects the next element.
-3. **Review.** Continue across pages and tabs. Findings are grouped by page, with thumbnails and a priority filter. Edit in the side panel or pop it out into a floating window.
-4. **Export.** Copy Markdown for a quick handoff, or download a ZIP with screenshot evidence. Review the files before sharing them with an AI tool or teammate.
+### 1. Pick the exact element
 
-The first finding names your session automatically. Add session-wide Figma/spec links or attach links to individual findings. Delete, discard, and new-session actions support Undo; one previous review is retained for recovery.
+Press **S** or choose **Select an element**. Hover to see the element's name and dimensions, then use **↑ / ↓** to move to its parent or child before selecting it. Use **P** when you want to capture the whole visible viewport instead.
+
+![A headline outlined by the element picker, with its dimensions and an annotated screenshot in the dark editor](docs/store/02-precise-selection.png)
+
+*Here, the article headline is selected rather than its surrounding section. The editor pairs the marked screenshot with a specific request about line wrapping and width, so the handoff identifies both the element and the intended change.*
+
+### 2. Write the change where you see it
+
+After selecting an element, start typing in the focused note box beside it. Use Markdown for emphasis, lists, and code; add `#tags` and set a priority without returning to the panel. **Enter** saves, **Shift+Enter** adds a line, and **⌘/Ctrl+Enter** saves and starts the next selection.
+
+Use the panel editor to refine the note, add Figma or other reference links, and adjust the finding's details. Session-wide links can hold a shared design file or spec.
+
+### 3. Keep one review across pages
+
+Navigate to another page or tab and keep capturing. Findings stay grouped by page, with screenshot thumbnails, priorities, tags, and reference links. Filter by priority when you need to focus on the most urgent changes.
+
+![An inline typography note on the Precipice page alongside a light panel grouping findings from several website pages](docs/store/03-review-across-pages.png)
+
+*The page stays in dark mode while the panel uses light mode. A new typography note sits beside the Precipice heading; the panel keeps earlier accessibility, copy, and typography findings organized under their source pages.*
+
+The first finding names your session automatically. Rename it any time, edit saved findings, or use Undo after deleting, discarding, or starting a new session. One previous review is retained for recovery.
 
 ### Built for detailed feedback
 
@@ -56,16 +75,13 @@ The first finding names your session automatically. Add session-wide Figma/spec 
 | Organized reviews | Findings grouped by page, thumbnails, tags, and reference links |
 | Flexible workspace | Side panel or floating window, with light and dark themes |
 
-<details>
-<summary><strong>See the light and dark interface</strong></summary>
-
-![Hyper Spec in light and dark themes](docs/store/05-brand-light-dark.png)
-
-</details>
-
 ## Hand a report to your coding agent
 
-Choose **Copy Markdown** to paste the report as text. Copied reports do not contain screenshots; use **Export report** when you need visual evidence.
+Choose **Copy Markdown** for a quick text handoff, or **Export report** for a ZIP with screenshot evidence. Each finding keeps your observation together with the page, element selector, captured styles, priority, and reference links.
+
+![An example exported Markdown report with a findings summary, reference links, ZIP contents, and an example coding-agent prompt](docs/store/04-export-spec.png)
+
+*The export brings findings from several pages into one report. Its summary helps a teammate or agent scan the work before inspecting individual findings. The ZIP includes the full marked screenshots and element close-ups; copied Markdown contains text only.*
 
 ```text
 review.zip
@@ -81,6 +97,16 @@ Unzip the report, attach `report.md` and the relevant screenshots to your agent,
 > Review the findings in report.md and fix the spacing issues. Use the selectors and screenshots as evidence, inspect the source, and verify the result.
 
 Page text, links, and notes are untrusted report data. Review them before asking an agent to act on the report. Component names are hints, not guaranteed mappings to source files.
+
+## Light or dark, beside your work
+
+Choose the panel theme independently of the website. Keep Hyper Spec docked in the side panel, or pop it out into a floating window when you need more room.
+
+![A branded side-by-side view of Hyper Spec's light and dark panels, showing the same review and capture controls](docs/store/05-brand-light-dark.png)
+
+*The same review in both themes: session links at the top, capture controls within reach, and saved findings below. Switching appearance keeps the review intact.*
+
+All walkthrough images use example review notes on public subpages of [madhavnair.in](https://madhavnair.in), as featured in the Chrome Web Store submission. Click any screenshot to inspect it at full size.
 
 ## Keyboard shortcuts
 
