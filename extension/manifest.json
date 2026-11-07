@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Hyper Spec",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Select elements on any live page, note what to change, and export a precise spec for Claude Code, Codex, or your team.",
   "minimum_chrome_version": "116",
   "permissions": [

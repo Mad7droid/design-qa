@@ -1,8 +1,15 @@
+// Only extension UI may request privileged window/navigation actions.
+const fromPanel = sender => sender?.id === chrome.runtime.id &&
+  sender.url?.split('?')[0] === chrome.runtime.getURL('panel.html');
+const fromPage = sender => sender?.id === chrome.runtime.id && sender.tab?.id != null &&
+  sender.frameId === 0 && sender.url === sender.tab.url;
+// Review storage is private to trusted extension contexts, not injected page scripts.
+const storageReady = chrome.storage.local.setAccessLevel({accessLevel:'TRUSTED_CONTEXTS'});
 // Remember the browser being reviewed while the floating window has focus.
 chrome.windows.onFocusChanged.addListener(async id=>{if(id===chrome.windows.WINDOW_ID_NONE)return;try{const win=await chrome.windows.get(id);if(win.type==='normal')await chrome.storage.session.set({reviewWindowId:id});}catch{}});
 let openingWindow=null;
 chrome.runtime.onMessage.addListener((message,sender,respond)=>{
- if(message.type!=='popout')return;
+ if(message?.type!=='popout'||!fromPanel(sender))return;
  openingWindow ||= (async()=>{
    const source=await chrome.windows.getLastFocused({windowTypes:['normal']});
    await chrome.storage.session.set({reviewWindowId:source.id});
@@ -18,11 +25,13 @@ chrome.windows.onRemoved.addListener(async id=>{const {floatingWindowId}=await c
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 let queue = Promise.resolve();
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
-  if (message.type !== 'selection') return;
+  if (message?.type !== 'selection' || !fromPage(sender)) return;
   queue = queue.then(async () => {
+    await storageReady;
+    if (!message.data || message.data.url !== sender.url || typeof message.data.selector !== 'string') throw new Error('Invalid selection.');
     const tab = await chrome.tabs.get(sender.tab.id);
     const [active] = await chrome.tabs.query({active: true, windowId: tab.windowId});
-    if (active?.id !== tab.id) throw new Error('Return to the selected tab and capture again.');
+    if (active?.id !== tab.id || tab.url !== sender.url) throw new Error('Return to the selected tab and capture again.');
     let framework = null;
     if (!message.data.shadowRoot) {
       try {
@@ -53,29 +62,37 @@ chrome.runtime.onMessage.addListener((message, sender, respond) => {
 });
 // Keyboard shortcuts work from the page itself, so reviewers never have to reach for the panel.
 chrome.commands.onCommand.addListener((command,tab)=>runCommand(command,tab,true).catch(()=>{}));
-chrome.runtime.onMessage.addListener((message,sender)=>{if(message.type==='hotkey'&&sender.tab)runCommand(message.command,sender.tab,false).catch(()=>{});});
+chrome.runtime.onMessage.addListener((message,sender)=>{if(message?.type==='hotkey'&&fromPage(sender))runCommand(message.command,sender.tab,false).catch(()=>{});});
 // Page S / P keys only listen while a panel is connected.
 // The flag lives in session storage so page scripts never receive the (large) review session in change events.
 let panels=0;
 chrome.storage.session.setAccessLevel({accessLevel:'TRUSTED_AND_UNTRUSTED_CONTEXTS'}).catch(()=>{});
 chrome.storage.session.set({panelOpen:false});
-chrome.runtime.onConnect.addListener(port=>{if(port.name!=='panel')return;panels++;chrome.storage.session.set({panelOpen:true});port.onDisconnect.addListener(()=>{panels=Math.max(0,panels-1);if(!panels)chrome.storage.session.set({panelOpen:false});});});
+chrome.runtime.onConnect.addListener(port=>{if(port.name!=='panel'||!fromPanel(port.sender))return;panels++;chrome.storage.session.set({panelOpen:true});port.onDisconnect.addListener(()=>{panels=Math.max(0,panels-1);if(!panels)chrome.storage.session.set({panelOpen:false});});});
 async function runCommand(command,tab,openPanel){
   if(!tab?.id||!/^https?:|^file:/.test(tab.url||''))return;
   // Open synchronously: the shortcut's user gesture expires after the first await.
   if(openPanel)chrome.sidePanel.open({windowId:tab.windowId}).catch(()=>{});
+  if (!['select-element','capture-page'].includes(command)) return;
+  if (!openPanel && !panels) return;
+  const [active] = await chrome.tabs.query({active:true,windowId:tab.windowId});
+  const current = await chrome.tabs.get(tab.id);
+  if (active?.id !== tab.id || current.url !== tab.url) return;
+  await storageReady;
   const {floatingWindowId}=await chrome.storage.session.get('floatingWindowId');
   if(command==='select-element')await chrome.scripting.executeScript({target:{tabId:tab.id},files:['format.js','picker.js']});
   if(command==='capture-page'){
     const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>({url:location.href,pageTitle:document.title,component:'Page viewport',componentSource:'Page capture',selector:'document',tag:'document',specs:{},viewport:{width:innerWidth,height:innerHeight,devicePixelRatio,scrollX,scrollY}})});
     const screenshot=await chrome.tabs.captureVisibleTab(tab.windowId,{format:'png'});
+    const [stillActive] = await chrome.tabs.query({active:true,windowId:tab.windowId});
+    if (stillActive?.id !== tab.id || (await chrome.tabs.get(tab.id)).url !== result.url) return;
     await chrome.storage.local.set({draft:{...result,screenshot,id:crypto.randomUUID(),capturedAt:new Date().toISOString()}});
     if(floatingWindowId)try{await chrome.windows.update(floatingWindowId,{focused:true});}catch{}
   }
 }
 // Reopen a finding: reuse a tab already on that URL, otherwise open one, then flash the element.
 chrome.runtime.onMessage.addListener((message,sender,respond)=>{
-  if(message.type!=='reveal')return;
+  if(message?.type!=='reveal'||!fromPanel(sender))return;
   if(!/^(https?|file):/.test(message.url||'')){respond({error:'Only web pages can be reopened.'});return;}
   (async()=>{
     const {reviewWindowId}=await chrome.storage.session.get('reviewWindowId');
@@ -95,5 +112,20 @@ chrome.runtime.onMessage.addListener((message,sender,respond)=>{
     }});
     return result||{ok:true};
   })().then(respond,error=>respond({error:'Could not open that page: '+error.message}));
+  return true;
+});
+
+chrome.runtime.onMessage.addListener((message,sender,respond)=>{
+  if(message?.type!=='update-draft'||!fromPage(sender))return;
+  (async()=>{
+    await storageReady;
+    const {draft}=await chrome.storage.local.get('draft');
+    if(!draft||draft.id!==message.id||draft.url!==sender.url)throw new Error('This capture is no longer active.');
+    const patch={};
+    if(typeof message.patch?.comment==='string')patch.comment=message.patch.comment.slice(0,50000);
+    if(['High','Medium','Low'].includes(message.patch?.severity))patch.severity=message.patch.severity;
+    await chrome.storage.local.set({draft:{...draft,...patch}});
+    return {ok:true};
+  })().then(respond,()=>respond({error:'Could not update this capture.'}));
   return true;
 });

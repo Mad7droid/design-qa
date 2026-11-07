@@ -5,7 +5,7 @@
   chrome.storage.session.get('panelOpen').then(d => { active = !!d.panelOpen; }).catch(() => {});
   chrome.storage.session.onChanged.addListener(changes => { if (changes.panelOpen) active = !!changes.panelOpen.newValue; });
   window.addEventListener('keydown', e => {
-    if (!active || e.repeat || e.metaKey || e.ctrlKey || e.altKey || e.isComposing || window.__hyperQA) return;
+    if (!e.isTrusted || !active || e.repeat || e.metaKey || e.ctrlKey || e.altKey || e.isComposing || window.__hyperQA) return;
     const el = e.composedPath()[0];
     // The inline editor's closed shadow root retargets keyboard events to its host.
     if (el?.closest?.('[data-hyperqa-note]')) return;

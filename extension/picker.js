@@ -19,6 +19,7 @@
     Object.assign(label.style, {display:'block',left:Math.max(4,Math.min(r.x,innerWidth-200))+'px',top:(r.y>26?r.y-24:Math.min(r.bottom+4,innerHeight-22))+'px'});
   }
   function move(e) {
+    if (!e.isTrusted) return;
     const el = e.composedPath()[0];
     if (!(el instanceof Element) || el === hovered) return;
     hovered = el; trail = []; show(el);
@@ -33,9 +34,10 @@
     if (!selecting) chrome.runtime.sendMessage({type:'picker-ended'}).catch(()=>{});
   }
   // Keys pressed while the panel has focus are forwarded here, so ↑/↓ work without clicking the page first.
-  function relay(message) { if (message?.type === 'picker-key') key({key: message.key, preventDefault(){}, stopImmediatePropagation(){}, composedPath: () => [target]}); }
+  function relay(message) { if (message?.type === 'picker-key') key({isTrusted: true, key: message.key, preventDefault(){}, stopImmediatePropagation(){}, composedPath: () => [target]}); }
   let selecting = false;
   function key(e) {
+    if (!e.isTrusted) return;
     if (e.key === 'Escape') { e.preventDefault(); cancel(); return; }
     if (!target) return;
     if (e.key === 'ArrowUp' && target.parentElement && target.parentElement !== document.documentElement) { e.preventDefault(); trail.push(target); show(target.parentElement); }
@@ -68,6 +70,7 @@
     return parts.join(' > ');
   }
   async function select(e) {
+    if (!e.isTrusted) return;
     e.preventDefault(); e.stopImmediatePropagation();
     const el=target||e.composedPath()[0];
     if (!(el instanceof Element)) return;
@@ -84,8 +87,6 @@
   }
   // Inline note box beside the selection, so typing can start the moment the capture lands.
   async function note(id, rect) {
-    // Fall back to the stored draft so an older background worker still opens the box.
-    if (!id) { try { id = (await chrome.storage.local.get('draft')).draft?.id; } catch {} }
     if (!id) return;
     const mac = /Mac/.test(navigator.platform), alt = mac ? '⌥' : 'Alt+';
     const host = document.createElement('div');
@@ -110,13 +111,13 @@
     box.style.left = pos[0] + 'px'; box.style.top = pos[1] + 'px';
     document.documentElement.append(host);
     let timer, severity = 'Medium';
-    const update = async patch => { try { const {draft} = await chrome.storage.local.get('draft'); if (draft?.id === id) await chrome.storage.local.set({draft: {...draft, ...patch}}); } catch {} };
+    const update = async patch => { try { await chrome.runtime.sendMessage({type:'update-draft',id,patch}); } catch {} };
     const sync = () => { clearTimeout(timer); timer = setTimeout(() => update({comment: field.value}), 300); };
     const setPriority = p => { severity = p; for (const b of root.querySelectorAll('.prio button')) b.setAttribute('aria-checked', String(b.dataset.p === p)); update({severity: p}); };
     for (const b of root.querySelectorAll('.prio button')) b.addEventListener('click', () => { setPriority(b.dataset.p); field.focus(); });
     const close = () => { clearTimeout(timer); host.remove(); window.removeEventListener('pointerdown', outside, true); delete window.__hyperQAToast; };
     const outside = e => { if (!e.composedPath().includes(host)) { if (field.value) update({comment: field.value}); close(); } };
-    const discard = () => { chrome.runtime.sendMessage({type:'discard-draft'}).catch(()=>{}); close(); };
+    const discard = () => { chrome.runtime.sendMessage({type:'discard-draft',id}).catch(()=>{}); close(); };
     root.querySelector('.close').addEventListener('click', discard);
     let warned = false;
     field.dataset.hfMax = 180;

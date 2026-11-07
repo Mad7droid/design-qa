@@ -2,6 +2,18 @@
 
 All notable changes to Hyper Spec (formerly Hyper-Design-QA). Versions match `extension/manifest.json`.
 
+## 1.1.1 — unreleased
+
+### Security
+- Reject synthetic page keyboard and picker events so websites cannot trigger captures with script-generated inputs.
+- Restrict local review storage to trusted extension contexts. The inline editor sends scoped updates through the background worker instead of reading review storage.
+- Validate message senders; only the extension panel can request pop-out windows and page navigation. Draft updates are limited to the matching page and capture, and cannot replace screenshot evidence.
+- Recheck the active tab and URL before retaining viewport captures.
+- Add security regression tests and private vulnerability-reporting instructions.
+
+### Documentation
+- Reorganize the README around installation, capture/export, privacy, and contributor setup.
+
 ## 1.1.0 — 2 Nov 2026 · prepared for the Chrome Web Store
 
 ### Clearer names and controls

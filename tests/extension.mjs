@@ -11,9 +11,28 @@ const panel=await ctx.newPage();panel.on('pageerror',e=>errors.push('panel: '+e.
 await panel.goto(`chrome-extension://${id}/panel.html`);await panel.waitForSelector('#pick');
 const site=await ctx.newPage();site.on('pageerror',e=>errors.push('site: '+e.message));
 await site.goto('https://shop.test/cart');await site.bringToFront();await site.waitForTimeout(500);
+// A web page cannot forge keyboard shortcuts to trigger capture.
+await site.evaluate(()=>{for(const key of ['s','p'])window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));});
+await site.waitForTimeout(100);
+assert.equal(await site.locator('text=Hyper Spec · Click to select').count(),0);
+// Injected code cannot read other pages' reviews from extension storage.
+const access=await sw.evaluate(async tabUrl=>{
+  const [tab]=await chrome.tabs.query({url:tabUrl});
+  const [{result}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:async()=>{
+    try{await chrome.storage.local.get(null);return 'exposed';}catch{return 'denied';}
+  }});
+  return result;
+},'https://shop.test/cart');
+assert.equal(access,'denied');
 // page S key -> picker
 await site.locator('h1').click();await site.keyboard.press('s');await site.waitForTimeout(600);
 const pickerOn=await site.evaluate(()=>!!document.querySelector('div')&&[...document.querySelectorAll('div')].some(d=>d.textContent.includes('Click to select')));
+// Synthetic picker input must not select or capture an element either.
+await site.evaluate(()=>{
+  document.querySelector('#pay').dispatchEvent(new MouseEvent('click',{bubbles:true}));
+  window.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));
+});
+assert.equal(await sw.evaluate(async()=>!!(await chrome.storage.local.get('draft')).draft),false);
 await site.locator('#pay').hover();await site.waitForTimeout(100);const tc=Date.now();await site.locator('#pay').click();
 await site.waitForTimeout(1500);const captureMs=Date.now()-tc;
 await site.keyboard.type('Pay button needs **more padding** and 44px height');await site.keyboard.press('Alt+Digit1');await site.keyboard.press('Enter');

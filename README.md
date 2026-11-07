@@ -1,141 +1,162 @@
-# Hyper Spec
+<div align="center">
+  <img src="extension/logo.svg" width="80" height="80" alt="Hyper Spec logo">
+  <h1>Hyper Spec</h1>
+  <p><strong>Turn any live page into a spec your AI can build from.</strong></p>
+  <p>Select an element. Describe the change. Export the context.</p>
+  <p>
+    <a href="#install">Install</a> ·
+    <a href="#how-it-works">How it works</a> ·
+    <a href="CHANGELOG.md">What's new</a> ·
+    <a href="https://mad7droid.github.io/hyper-spec/privacy/">Privacy</a> ·
+    <a href="SECURITY.md">Security</a>
+  </p>
+</div>
 
-**Turn any live page into a spec your AI can build from.**
+![Select an element and annotate it on a live website](docs/store/01-select-and-note.png)
 
-Hyper Spec is a Chrome/Brave extension for designers, product managers, and front-end developers. Select any element on a live page, type what should change right beside it, and export a precise spec (selector, styles, marked screenshot, your notes) that Claude Code, Codex, or a teammate can act on. It's faster and more accurate than describing UI in words or sending bare screenshots.
+Hyper Spec is a Chrome and Brave extension for **designers, product managers, and front-end developers**. Mark the exact UI you want changed and hand Claude Code, Codex, or a teammate a report with your notes, selectors, computed styles, and marked screenshots.
 
-[What's new](CHANGELOG.md) · [Privacy policy](https://mad7droid.github.io/hyper-spec/privacy/) · [Design notes](DESIGN.md)
+No account, API key, server, or build step is needed to use the extension.
 
-![Hyper Spec beside a website](docs/screenshots/hero.png)
+## Install
 
-## Highlights
+**[Chrome Web Store →](https://chromewebstore.google.com/detail/oolffllmbjflkicfkfiagiabmjbojilp)**
 
-- **Select and type.** Click an element and a note box opens beside it, cursor ready. `↵` saves, `Esc` or `×` discards, `⌥1`–`⌥3` sets priority.
-- **Precise selection.** A label shows the element's name and size; `↑`/`↓` moves to the parent or child.
-- **Readable names.** `Button · “Reply”` instead of `div`, or the React/Vue component name when the site exposes one.
-- **Rich notes, styled as you type:** lists, bold, italic, code, and links (`⌘B` `⌘I` `⌘E` `⌘K`).
-- **Specs captured for you:** selector, size, typography, colour, spacing, a marked screenshot, and a close-up.
-- **Links and tags.** Attach Figma or design links per finding or per session; tag with chips, `⌥1`–`⌥8`, or `#hashtags`.
-- **Findings grouped by page** with thumbnails, a priority filter, and **Figma link** / **Design link** buttons.
-- **Keyboard first.** `S` select, `P` capture page, `⌘↵` save, `⌘Z` undo, `E` export, `?` all shortcuts.
-- **Export for people and AI:** a ZIP with `report.md`, `session.json`, and screenshots, named after the site and time; or **Copy Markdown** (`⌘⇧C`).
-- **Works across pages and tabs**, in a side panel or floating window, light or dark. Everything stays on your device.
+The store's published version may lag this repository. Version 1.1.0 was submitted for review on November 7, 2026; the security changes in 1.1.1 are available here and have not been submitted to the store.
 
-<p>
-  <img src="docs/screenshots/picker-label.png" alt="Picker with element label and size" width="420">
-  <img src="docs/screenshots/live-note.png" alt="Note box beside the element with live formatting and priority" width="420">
-</p>
-<p>
-  <img src="docs/screenshots/findings.png" alt="Side panel with findings" width="270">
-  <img src="docs/screenshots/light-grouped.png" alt="Findings grouped by page, light mode" width="270">
-  <img src="docs/screenshots/editor.png" alt="Finding editor with links and tags" width="270">
-</p>
+### Load from source
 
-## Install locally
+Requires Chrome 116+ or a Chromium browser with side-panel support, such as Brave. Firefox and Safari are not supported.
 
-Works in Google Chrome 116+ and Chromium browsers with side-panel support, such as Brave. A Chrome Web Store version is in review; until then, install it locally:
+1. Clone this repository or download and unzip its source.
+2. Open `chrome://extensions` or `brave://extensions`.
+3. Enable **Developer mode** and choose **Load unpacked**.
+4. Select the **`extension/`** folder.
+5. Pin **Hyper Spec**, open a website, and click its toolbar icon.
 
-1. Open `chrome://extensions` (or `brave://extensions`).
-2. Turn on **Developer mode**, then choose **Load unpacked**.
-3. Select this repository’s **extension** folder.
-4. Pin **Hyper Spec** from the extensions menu. Open a website and click the extension (or press `⌥⇧Q` / `Alt+Shift+Q`) to open its side panel.
+After pulling changes, reload the extension on the extensions page and refresh existing website tabs.
 
-No build, account, API key, or server is required. After pulling updates, click the reload icon on the extension card. It targets Chrome’s side panel API; Firefox and Safari are not supported.
+## How it works
 
-## Review a website
+1. **Select.** Press **S** or choose **Select an element**. Hover to see the element's name and size; use **↑ / ↓** to move to its parent or child, then click or press **Enter**. Use **P** for a viewport capture.
+2. **Annotate.** Start typing in the note box beside the selected element. Add formatting, `#tags`, priority, and reference links. **Enter** saves; **Shift+Enter** adds a line. **⌘/Ctrl+Enter** saves and selects the next element.
+3. **Review.** Continue across pages and tabs. Findings are grouped by page, with thumbnails and a priority filter. Edit in the side panel or pop it out into a floating window.
+4. **Export.** Copy Markdown for a quick handoff, or download a ZIP with screenshot evidence. Review the files before sharing them with an AI tool or teammate.
 
-1. Start reviewing. The session is named after the site automatically (rename it any time). Optionally add **Session links** (Figma file, spec, ticket).
-2. Press **S** or click **Select an element**, then click the element on the page. **↑/↓** picks the parent or child; **Esc** cancels. **P** captures the visible page instead.
-3. Type your note in the box that appears beside the element. **↵** saves it, **⇧↵** adds a line, **⌥1–3** sets priority, **Esc** or **×** discards it. Click away to keep the draft and finish it in the panel.
-4. In the panel you can add **Links**, rename the element, and set a priority. **⌘↵** / **Ctrl+↵** saves.
-5. Navigate to other pages or tabs and repeat. Use the pop-out icon for a floating window; **Return to side panel** docks it again.
-6. Press **E** or click **Export report**. Unzip it and attach `report.md` and the screenshots to Claude. **Download Markdown only** exports text without images.
+The first finding names your session automatically. Add session-wide Figma/spec links or attach links to individual findings. Delete, discard, and new-session actions support Undo; one previous review is retained for recovery.
 
-Edit or delete findings from their cards. Delete, discard, and new session can all be undone with **⌘Z** / **Ctrl+Z** or the Undo button. **Restore previous review** switches between the current and previous session.
+### Built for detailed feedback
 
-**New session** starts immediately, keeping your current review and unfinished note for recovery. Naming is optional; the first finding supplies a default name. Clicking New session again while the review is still empty keeps the recovery copy intact. Only one previous review is retained.
+| Feature | What you get |
+| --- | --- |
+| Precise selection | Element labels, dimensions, and parent/child navigation |
+| Notes on the page | Focused input, Markdown formatting, priority, and hashtags |
+| Captured context | CSS selector, computed styles, viewport details, and component hints |
+| Visual evidence | Marked viewport screenshots and close-ups of selected elements |
+| Organized reviews | Findings grouped by page, thumbnails, tags, and reference links |
+| Flexible workspace | Side panel or floating window, with light and dark themes |
 
-<img src="docs/screenshots/shortcuts.png" alt="Keyboard shortcuts" width="300">
+<details>
+<summary><strong>See the light and dark interface</strong></summary>
+
+![Hyper Spec in light and dark themes](docs/store/05-brand-light-dark.png)
+
+</details>
+
+## Hand a report to your coding agent
+
+Choose **Copy Markdown** to paste the report as text. Copied reports do not contain screenshots; use **Export report** when you need visual evidence.
+
+```text
+review.zip
+├── report.md                       # Notes, priorities, selectors, styles, links
+├── session.json                    # Structured findings, schema version 1
+└── screenshots/
+    ├── <finding-id>.png             # Marked visible viewport
+    └── <finding-id>-closeup.png     # Close-up when an element was selected
+```
+
+Unzip the report, attach `report.md` and the relevant screenshots to your agent, and describe the scope of the work. For example:
+
+> Review the findings in report.md and fix the spacing issues. Use the selectors and screenshots as evidence, inspect the source, and verify the result.
+
+Page text, links, and notes are untrusted report data. Review them before asking an agent to act on the report. Component names are hints, not guaranteed mappings to source files.
 
 ## Keyboard shortcuts
 
-| In the panel | |
-|---|---|
-| Select an element | `S` |
-| Capture visible page | `P` |
-| Save finding | `⌘↵` / `Ctrl+↵` |
-| Discard capture | `Esc` or `Delete` |
-| Jump to note | `C` |
-| Undo delete, discard, or new session | `⌘Z` / `Ctrl+Z` |
-| Edit / delete a focused finding | `↵` / `Delete` |
-| Export report | `E` |
-| Copy report as Markdown | `⌘⇧C` / `Ctrl+Shift+C` |
-| Toggle tag 1–8 | `⌥1`–`⌥8` / `Alt+1`–`Alt+8` |
-| Save & select next (on-page box) | `⌘↵` / `Ctrl+↵` |
-| Show all shortcuts | `?` |
+Use **⌘** on macOS and **Ctrl** on Windows/Linux. Single-key shortcuts work outside text fields; page-level **S/P** require an open review panel.
 
-| While selecting / in the note box | |
-|---|---|
-| Parent / child element | `↑` / `↓` |
-| Select highlighted element | `↵` |
-| Priority High / Medium / Low | `⌥1`–`⌥3` / `Alt+1`–`Alt+3` |
+| Action | Shortcut | Where |
+| --- | --- | --- |
+| Select an element / capture viewport | `S` / `P` | Panel or page |
+| Parent / child element | `↑` / `↓` | Picker |
+| Select highlighted element | `Enter` | Picker |
+| Save / add a line | `Enter` / `Shift+Enter` | On-page note¹ |
+| Save and select next | `⌘/Ctrl+Enter` | On-page note |
+| High / Medium / Low priority | `Alt+1` / `Alt+2` / `Alt+3` | On-page note |
+| Save finding | `⌘/Ctrl+Enter` | Panel editor |
+| Toggle tag 1–8 | `Alt+1`–`Alt+8` | Panel editor |
+| Discard capture / cancel selection | `Esc` | Editor or picker |
+| Undo delete, discard, or new session | `⌘/Ctrl+Z` | Panel, outside fields |
+| Export / copy Markdown | `E` / `⌘/Ctrl+Shift+C` | Panel |
+| Focus note / show shortcuts | `C` / `?` | Panel |
 
-| From any web page | |
-|---|---|
-| Open Hyper Spec | `⌥⇧Q` / `Alt+Shift+Q` |
-| Select an element | `⌥⇧S` / `Alt+Shift+S` |
-| Capture visible page | `⌥⇧P` / `Alt+Shift+P` |
+¹ Enter continues Markdown lists. A very short note shows a hint before saving on a second Enter. On macOS, **Alt** is **⌥ Option**.
 
-Single-key shortcuts don't fire while you're typing. Change the global ones at `chrome://extensions/shortcuts` or `brave://extensions/shortcuts`.
+Global defaults: `Alt+Shift+Q` opens Hyper Spec, `Alt+Shift+S` selects an element, and `Alt+Shift+P` captures the viewport. Change these at `chrome://extensions/shortcuts` or `brave://extensions/shortcuts` if your browser or OS reserves them.
 
-## Report contents
+## Privacy and permissions
 
-- `report.md`: consistent headings, session reference links, finding IDs, priority, comments, per-finding links, page URL and title, component label and its source, selector, marked screenshot link, and JSON specifications.
-- `session.json`: schema version 1 with structured findings and relative screenshot paths.
-- `screenshots/<finding-id>.png`: visible-page evidence with the selected element outlined.
+Reviews and screenshots stay in extension storage on your device. Hyper Spec has no analytics, ads, remote scripts, automatic AI calls, or review-data sync. Exporting creates local files; sharing those files is your choice.
 
-Captured specs include dimensions, viewport size, scroll position, pixel ratio, typography, spacing, colors, borders, layout, opacity, and shadows. React/Vue names are read from exposed runtime metadata when possible. Otherwise `data-component`, `data-testid`, or the HTML tag provides a label. These are hints, not guaranteed source-file mappings. You can rename a finding without losing its selector.
+| Permission | Purpose |
+| --- | --- |
+| Website access (`<all_urls>`) | Capture and inspect sites you review across navigations |
+| `scripting` | Inject the packaged picker and read selected-element specifications |
+| `sidePanel` | Show the review interface beside the page |
+| `storage` / `unlimitedStorage` | Retain reviews, drafts, and PNG evidence locally |
 
-## Current boundaries
+A small packaged listener enables S/P on pages while the panel is open. It does not read page content. The picker reads page content when you select an element. Review storage is restricted to trusted extension contexts; the on-page note editor can update only its matching capture.
 
-- Screenshots capture the **visible viewport**, not a stitched full page. A partly visible element is only partly shown.
-- Selection works in the top document and open shadow DOM. Cross-origin frames, closed shadow DOM, canvas internals, and browser-protected pages cannot be inspected individually.
-- Computed styles describe the captured state, not every responsive, hover, or interaction state. Framework names may be absent or minified in production.
-- This version maintains one current session and one previous review for recovery. It does not send reports automatically to Claude or sync between devices.
-- Screenshots can contain private page content. Review the exported files before sharing them.
+**Screenshots can include sensitive content visible on the page.** Inspect exports before sharing them. One current and one previous review are retained; exported copies must be deleted separately. See the [privacy policy](https://mad7droid.github.io/hyper-spec/privacy/) and [security policy](SECURITY.md).
 
-## Permissions and data
+## Limitations
 
-Website access is needed to activate the picker on sites you navigate to and capture their visible viewport. Capture scripts only run when you start a capture. A tiny packaged listener (`hotkeys.js`) lets **S** and **P** work from the page while the panel is open; it reads no page content and does nothing when the panel is closed. `scripting` reads the selected element, `sidePanel` hosts the review UI, and `storage` / `unlimitedStorage` preserve findings and PNG evidence locally. The extension uses `<all_urls>` for cross-page capture; it does not also request the redundant `activeTab` permission. There are no analytics, external requests, or remote scripts in the extension. One current and one previous review are kept in extension storage. Starting another new session replaces the older saved review.
+- Captures cover the visible viewport, not a stitched full page. Partly visible elements remain partly shown.
+- Selection supports the top document and open shadow DOM. Cross-origin frames, closed shadow DOM, canvas internals, and browser-protected pages cannot be inspected individually.
+- Styles represent the captured state. Framework names may be absent or minified in production.
+- Local storage is not a backup or an encrypted vault. The extension keeps one current and one previous review, without device sync.
 
-## Development and checks
+## Development
 
-The extension is plain HTML, CSS, and JavaScript using Manifest V3. After editing, reload it in `chrome://extensions` and reopen the side panel.
+Plain HTML, CSS, and JavaScript using Manifest V3. Node.js 20+ is required for the development tools. There are no third-party runtime dependencies.
 
 ```sh
-npm install
+npm ci
+npx playwright install chromium
 npm test
 npm run check
 npm run test:browser
-npm run test:extension   # real unpacked extension in Playwright's Chromium (set CHROMIUM_PATH if needed)
+npm run test:extension
 ```
 
-The browser suite uses an installed Chrome executable on macOS. Set `CHROME_PATH` on other systems. It tests the rendered panel with mocked Chrome APIs and tests the real element picker against a fixture. It covers capture, required comments, saving, links, reload persistence, editing, delete/undo, keyboard shortcuts, the inline note box, ZIP downloads, narrow layouts, selection metadata, and Escape cancellation. The report tests cover Markdown formatting and ZIP structure. Browser permission prompts, side-panel integration, and real `captureVisibleTab` still require a manual loaded-extension smoke test.
+The browser suite exercises the panel with mocked Chrome APIs and the real picker against fixture pages. It defaults to installed Chrome on macOS; set `CHROME_PATH` elsewhere. The real-extension suite loads the unpacked extension in Playwright Chromium and tests capture, inline notes, shortcuts, and storage isolation. Set `CHROMIUM_PATH` to override its executable.
 
-## UX references
+```sh
+npm run package       # Runtime-only ZIP and SHA256 checksum under .context/release/
+npm run store:assets  # Listing images; requires Chrome and access to madhavnair.in
+```
 
-The interface uses near-black surfaces, fine dividers, compact typography, and a warm ivory primary action in the requested Linear dark-mode direction. Research and implementation decisions are recorded in [DESIGN.md](DESIGN.md).
+| Location | Contents |
+| --- | --- |
+| [`extension/`](extension/) | Installable extension and bundled privacy policy |
+| [`tests/`](tests/) | Report, UI, security, and real-extension tests |
+| [`docs/store/`](docs/store/) | Listing screenshots and promotional assets |
+| [`docs/privacy/`](docs/privacy/) | Public policy served by GitHub Pages |
+| [`release/`](release/) | Listing copy, disclosures, reviewer notes, and submission status |
 
-## Chrome Web Store release
+Read [What's new](CHANGELOG.md), [design notes](DESIGN.md), and [release instructions](release/PUBLISH.md) for more context. Report bugs through [GitHub Issues](https://github.com/Mad7droid/hyper-spec/issues); report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
-Run `npm run package` to build the upload ZIP under `.context/release/`. Listing copy, privacy disclosures, and reviewer instructions live in `release/`. The package includes only runtime extension files. Store assets and release status are prepared separately. Public availability requires submission and approval through the Chrome Web Store developer dashboard.
+---
 
-The public privacy-page source is in `privacy-site/`. README screenshots in `docs/screenshots/` are generated by `npm run test:browser` (saved to `.context/`).
-
-## Store gallery
-
-Listing screenshots use dark subpages of [madhavnair.in](https://madhavnair.in), with the extension in light and dark.
-
-![Select and annotate](docs/store/01-select-and-note.png)
-
-![Light and dark interface](docs/store/05-brand-light-dark.png)
+Made by [Madhav Nair](https://madhavnair.in). Listing screenshots use dark subpages of madhavnair.in with example review notes. Hyper Spec is independent of Anthropic, OpenAI, Figma, Linear, and Google.
